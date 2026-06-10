@@ -8,7 +8,7 @@ from rest_framework import status
 from django.contrib.auth import authenticate
 
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .models import User
 
 class TestView(APIView):
 
@@ -39,20 +39,31 @@ def profile(request):
 @permission_classes([AllowAny])
 def login(request):
     print(request.data)
-    serializer = RegisterSerializer(data=request.data)
-    if not serializer.is_valid():
-        return Response({
-            "message":"Validation Error!",
-            "error":serializer.errors
-            },
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    user = serializer.save()
-    print(user)
+
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    if not email:
+        return Response({"message": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
+    if not password:
+        return Response({"message": "Password are required"}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        user_obj = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({"message":"Invalid email!"},status=status.HTTP_400_BAD_REQUEST)
+
+    user = authenticate(username = user_obj.username,password=password)
+
+    if user is None:
+        return Response({"message":"Invalid password", }, status=status.HTTP_400_BAD_REQUEST )
+    
+    refresh = RefreshToken.for_user(user)
+
     return Response(
         {
-            "message": "Account Created Successfully",
-
+            "message": "Login Successfully",
+            "access":str(refresh.access_token),
+            "refresh":str(refresh),
             "user": {
                 "id": user.id,
                 "username": user.username,
@@ -62,15 +73,16 @@ def login(request):
                 "phone": user.phone
             }
         },
-        status=status.HTTP_201_CREATED
+        status=status.HTTP_200_OK
     )
     
 @api_view(["POST"])
 @permission_classes([AllowAny])
-def register(request):
+def RegistationView(request):
     print(request.data)
     serializer = RegisterSerializer(data = request.data)
     if not serializer.is_valid():
+        print(serializer.errors)
         return Response(
             {
                 "message":"Sompthing Error Occer!",
@@ -87,9 +99,8 @@ def register(request):
             },
             status=status.HTTP_400_BAD_REQUEST
         )
-
+    
     refresh = RefreshToken.for_user(user)
-
     return Response({
 
         "access": str(refresh.access_token),
@@ -104,19 +115,3 @@ def register(request):
 
     })
 
-
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def RegistationView(request):
-    try:
-        print(request)
-        print(request.data)
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                "message":"Registation is sucess full"
-            })
-        return Response( serializer.errors, status=status.HTTP_201_CREATED )
-    except Exception as e:
-        return Response({"message":"Error ocers!","error":e})

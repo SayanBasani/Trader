@@ -6,7 +6,7 @@
     <title>Login | Trader Pro</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
+    <!-- <script src="./../assets/js/login.js" defer></script> -->
     <script>
         tailwind.config = {
             darkMode: 'class'
@@ -156,7 +156,7 @@
 
                     </div>
 
-                    <form>
+                    <form id="loginForm">
 
                         <div class="mb-5">
 
@@ -165,7 +165,8 @@
                             </label>
 
                             <input
-                                type="email"
+                                name="email"
+                                type="text"
                                 placeholder="Enter your email"
                                 class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                             >
@@ -179,6 +180,7 @@
                             </label>
 
                             <input
+                                name="password"
                                 type="password"
                                 placeholder="Enter your password"
                                 class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
@@ -270,3 +272,5 @@
 
 </body>
 </html>
+
+<script type="module" src="./../assets/js/login.js"></script>

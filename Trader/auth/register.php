@@ -160,7 +160,7 @@
 
                     </div>
 
-                    <form>
+                    <form id="registerForm">
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
@@ -172,7 +172,9 @@
 
                                 <input
                                     type="text"
+                                    name="first_name"
                                     placeholder="John"
+                                    required
                                     class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                                 >
 
@@ -186,7 +188,9 @@
 
                                 <input
                                     type="text"
+                                    name="last_name"
                                     placeholder="Doe"
+                                    required
                                     class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                                 >
 
@@ -197,12 +201,30 @@
                         <div class="mb-4">
 
                             <label class="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Username
+                            </label>
+
+                            <input
+                                type="text"
+                                name="username"
+                                placeholder="Username"
+                                required
+                                class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
+                            >
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label class="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
                                 Email Address
                             </label>
 
                             <input
-                                type="email"
+                                type="text"
+                                name="email"
                                 placeholder="you@example.com"
+                                required
                                 class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                             >
 
@@ -216,22 +238,9 @@
 
                             <input
                                 type="tel"
+                                name="phone"
                                 placeholder="+91 9876543210"
-                                class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
-                            >
-
-                        </div>
-
-                        <div class="mb-4">
-
-                            <label class="block mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                                Referral Code (Optional)
-                            </label>
-
-                            <input
-                                type="text"
-                                placeholder="Referral Code"
-                                value="<?= $_GET['ref'] ?? '' ?>"
+                                required
                                 class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                             >
 
@@ -245,7 +254,9 @@
 
                             <input
                                 type="password"
+                                name="password"
                                 placeholder="Create a password"
+                                required
                                 class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                             >
 
@@ -259,22 +270,11 @@
 
                             <input
                                 type="password"
+                                name="confirm_password"
                                 placeholder="Confirm your password"
+                                required
                                 class="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-slate-800 dark:text-white"
                             >
-
-                        </div>
-
-                        <div class="flex items-start gap-3 mb-6">
-
-                            <input
-                                type="checkbox"
-                                class="mt-1"
-                            >
-
-                            <p class="text-sm text-slate-600 dark:text-slate-400">
-                                I agree to the Terms of Service and Privacy Policy.
-                            </p>
 
                         </div>
 
@@ -325,3 +325,5 @@
 
 </body>
 </html>
+
+<script type="module" src="./../assets/js/register.js"></script>

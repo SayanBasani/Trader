@@ -1,4 +1,4 @@
-<nav class=" top-0 left-0 right-0 h-16 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 " >
+<nav class="top-0 left-0 right-0 h-16 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-950/70 border-b border-slate-200 dark:border-slate-800 " >
 
     <div class="h-full px-4 lg:px-6 flex items-center justify-between">
 
