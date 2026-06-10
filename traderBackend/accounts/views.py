@@ -38,12 +38,49 @@ def profile(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
-    user = authenticate(username=username, password=password )
+    print(request.data)
+    serializer = RegisterSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response({
+            "message":"Validation Error!",
+            "error":serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    user = serializer.save()
+    print(user)
+    return Response(
+        {
+            "message": "Account Created Successfully",
 
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "phone": user.phone
+            }
+        },
+        status=status.HTTP_201_CREATED
+    )
+    
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def register(request):
+    print(request.data)
+    serializer = RegisterSerializer(data = request.data)
+    if not serializer.is_valid():
+        return Response(
+            {
+                "message":"Sompthing Error Occer!",
+                "error":serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    user = serializer.save()
+    print(user)
     if not user:
-
         return Response(
             {
                 "error": "Invalid Credentials"
@@ -73,6 +110,7 @@ def login(request):
 def RegistationView(request):
     try:
         print(request)
+        print(request.data)
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
