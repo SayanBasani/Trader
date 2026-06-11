@@ -17,11 +17,11 @@
 </head>
 
 <body class="w-screen h-screen bg-gray-100 dark:bg-slate-950 text-gray-800 dark:text-white">
-    <div class="">
+    <div class="fixed w-full">
         <?php include __DIR__ . '/components/navbar.php'; ?>
     </div>
 
-    <div class="flex">
+    <div class="flex pt-16">
 
         <?php include __DIR__ . '/components/sidebar.php'; ?>
 

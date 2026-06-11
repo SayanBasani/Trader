@@ -1,4 +1,5 @@
 <?php
+$target_url = "./auth/login.php";
 ob_start();
 ?>
 
@@ -205,7 +206,8 @@ ob_start();
                         Login History
                     </button>
 
-                    <button class="w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 transition">
+                    <!-- <a href=""></a> -->
+                    <button onclick="window.location.href='<?php echo $target_url; ?>'" class="w-full bg-red-600 text-white py-3 rounded-xl hover:bg-red-700 transition">
                         Logout All Devices
                     </button>
 

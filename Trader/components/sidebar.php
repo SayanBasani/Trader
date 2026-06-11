@@ -1,7 +1,7 @@
 <div
     id="overlay"
     onclick="closeSidebar()"
-    class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"
+    class="mt-16 hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"
 ></div>
 
 <aside
