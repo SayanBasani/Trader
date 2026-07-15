@@ -1,28 +1,36 @@
+"use client";
+import { useEffect, useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
 export default function DashboardLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    return (
-        <div className="flex h-screen">
+  const [collapsed, setCollapsed] = useState(false);
+  return (
+    <div className=" min-h-screen bg-slate-100 dark:bg-[#0B1220] transition-colors duration-300 " >
+      {/* Sidebar */}
+      <Sidebar  collapsed={collapsed} setCollapsed={setCollapsed} />
 
-            <Sidebar />
+      {/* Content */}
 
-            <div className="flex flex-col flex-1">
+      <div
+        className={` ${collapsed ? "lg:ml-20":"lg:ml-72"} transition-all duration-300 `}
+      >
+        {/* Header */}
 
-                <Header />
+        <Header collapsed={collapsed} />
 
-                <main className="flex-1 overflow-y-auto p-6 bg-gray-100">
+        {/* Main */}
 
-                    {children}
-
-                </main>
-
-            </div>
-
-        </div>
-    );
+        <main className="p-4 sm:p-6 lg:p-8 pt-24 lg:pt-24 min-h-screen ">
+          <div className="mx-auto max-w-[1600px]">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
+  );
 }

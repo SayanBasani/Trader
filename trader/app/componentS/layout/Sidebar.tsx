@@ -1,155 +1,336 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
-import {
-    ChevronLeft,
-    ChevronRight,
-    LayoutDashboard,
-    User,
-    ShoppingBag,
-    ChartColumn,
-    Settings,
-} from "lucide-react";
+import { LayoutDashboard, ChartCandlestick, Wallet, Bell, Settings, User, Menu, ChevronLeft, ChevronRight, X, } from "lucide-react";
 
 const menu = [
     {
-        name: "Dashboard",
-        href: "/dashboard",
+        title: "Dashboard",
+        href: "/home",
         icon: LayoutDashboard,
     },
     {
-        name: "Profile",
+        title: "Market",
+        href: "/market",
+        icon: ChartCandlestick,
+    },
+    {
+        title: "Portfolio",
+        href: "/portfolio",
+        icon: Wallet,
+    },
+    {
+        title: "Notifications",
+        href: "/notifications",
+        icon: Bell,
+    },
+    {
+        title: "Profile",
         href: "/profile",
         icon: User,
     },
     {
-        name: "Orders",
-        href: "/orders",
-        icon: ShoppingBag,
-    },
-    {
-        name: "Analytics",
-        href: "/analytics",
-        icon: ChartColumn,
-    },
-    {
-        name: "Settings",
+        title: "Settings",
         href: "/settings",
         icon: Settings,
     },
 ];
 
-export default function Sidebar() {
+
+import { Dispatch, SetStateAction } from "react";
+
+interface SidebarProps {
+  collapsed: boolean;
+  setCollapsed: Dispatch<SetStateAction<boolean>>;
+}
+
+
+export default function Sidebar({
+  collapsed,
+  setCollapsed,
+}: SidebarProps) {
+
     const pathname = usePathname();
 
-    const [collapsed, setCollapsed] = useState(false);
+    // const [collapsed, setCollapsed] = useState(false);
+
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
-        <aside
-            className={`
+        <>
+            {/* Mobile Button */}
+
+            <button
+                onClick={() => setMobileOpen(true)}
+                className="
+                fixed
+                left-1
+                top-4
+                z-50
+                rounded-lg
+                bg-blue-600
+                p-2
+                text-white
+                shadow-lg
+                lg:hidden
+                "
+            >
+                <ChevronRight size={22} />
+            </button>
+
+            {/* Mobile Background */}
+
+            {mobileOpen && (
+
+                <div
+                    onClick={() => setMobileOpen(false)}
+                    className="
+                    fixed
+                    inset-0
+                    z-40
+                    bg-black/50
+                    lg:hidden
+                    "
+                />
+
+            )}
+
+            {/* Sidebar */}
+
+            <aside
+                className={`
+                fixed
+                left-0
+                top-0
+                z-50
                 h-screen
+
+                border-r
+
+                border-gray-200
+                dark:border-slate-700
+
+                bg-white
+                dark:bg-[#101827]
+
                 transition-all
                 duration-300
-                border-r
-                border-gray-200
-                dark:border-gray-800
-                bg-white
-                dark:bg-slate-900
-                flex
-                flex-col
-                ${collapsed ? "w-20" : "w-64"}
-            `}
-        >
-            {/* Logo */}
 
-            <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-800">
+                ${collapsed ? "w-20" : "w-72"}
 
-                {!collapsed && (
-                    <div>
-                        <h2 className="font-bold text-xl text-gray-800 dark:text-white">
-                            Trader Pro
-                        </h2>
+                ${
+                    mobileOpen
+                        ? "translate-x-0"
+                        : "-translate-x-full lg:translate-x-0"
+                }
+                `}
+            >
 
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Trading Dashboard
-                        </p>
-                    </div>
-                )}
+                {/* Logo */}
 
-                <button
-                    onClick={() => setCollapsed(!collapsed)}
+                <div
                     className="
-                        rounded-lg
-                        p-2
-                        hover:bg-gray-100
-                        dark:hover:bg-slate-800
-                        transition
+                    flex
+                    h-20
+                    items-center
+                    justify-between
+                    border-b
+                    border-gray-200
+                    px-5
+                    dark:border-slate-700
                     "
                 >
-                    {collapsed ? (
-                        <ChevronRight className="text-gray-700 dark:text-white" />
-                    ) : (
-                        <ChevronLeft className="text-gray-700 dark:text-white" />
+
+                    {!collapsed && (
+
+                        <div>
+
+                            <h1
+                                className="
+                                text-2xl
+                                font-bold
+                                text-blue-600
+                                "
+                            >
+                                Trader Pro
+                            </h1>
+
+                            <p
+                                className="
+                                text-sm
+                                text-gray-500
+                                dark:text-gray-400
+                                "
+                            >
+                                Trading Dashboard
+                            </p>
+
+                        </div>
+
                     )}
-                </button>
-            </div>
 
-            {/* Menu */}
+                    <button
+                        onClick={() => setCollapsed(!collapsed)}
+                        className="
+                        hidden
+                        rounded-lg
+                        p-2
+                        transition
+                        hover:bg-gray-100
+                        dark:hover:bg-slate-700
+                        lg:block
+                        "
+                    >
+                        {collapsed
+                            ? <ChevronRight size={20}/>
+                            : <ChevronLeft size={20}/>}
+                    </button>
 
-            <nav className="flex-1 mt-4 px-3">
+                    <button
+                        onClick={() => setMobileOpen(false)}
+                        className="
+                        rounded-lg
+                        p-2
+                        lg:hidden
+                        text-black
+                        dark:text-white
+                        "
+                    >
+                        <X size={20}/>
+                    </button>
 
-                {menu.map((item) => {
+                </div>
 
-                    const Icon = item.icon;
+                {/* Menu */}
 
-                    const active = pathname === item.href;
+                <nav
+                    className="
+                    mt-6
+                    space-y-2
+                    px-3
+                    "
+                >
 
-                    return (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={`
-                                mb-2
+                    {menu.map((item)=>{
+
+                        const Icon=item.icon;
+
+                        const active=pathname===item.href;
+
+                        return(
+
+                            <Link
+
+                                key={item.href}
+
+                                href={item.href}
+
+                                className={`
                                 flex
                                 items-center
                                 rounded-xl
-                                px-3
+                                px-4
                                 py-3
-                                transition
+
+                                transition-all
 
                                 ${
                                     active
-                                        ? "bg-blue-600 text-white shadow"
-                                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800"
+                                    ?
+
+                                    "bg-blue-600 text-white shadow-lg"
+
+                                    :
+
+                                    "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
                                 }
-                            `}
-                        >
-                            <Icon size={20} />
+                                `}
+                            >
 
-                            {!collapsed && (
-                                <span className="ml-3 font-medium">
-                                    {item.name}
-                                </span>
-                            )}
-                        </Link>
-                    );
-                })}
-            </nav>
+                                <Icon
+                                    size={22}
+                                />
 
-            {/* Footer */}
+                                {!collapsed&&(
 
-            <div className="border-t border-gray-200 dark:border-gray-800 p-4">
+                                    <span
+                                        className="
+                                        ml-4
+                                        font-medium
+                                        "
+                                    >
+                                        {item.title}
+                                    </span>
 
-                {!collapsed && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Version 1.0
-                    </p>
-                )}
+                                )}
 
-            </div>
-        </aside>
+                            </Link>
+
+                        );
+
+                    })}
+
+                </nav>
+
+                {/* Bottom */}
+
+                <div
+                    className="
+                    absolute
+                    bottom-5
+                    left-0
+                    w-full
+                    px-4
+                    "
+                >
+
+                    <div
+                        className="
+                        rounded-xl
+                        bg-gradient-to-r
+                        from-blue-500
+                        to-indigo-600
+                        p-4
+                        text-white
+                        "
+                    >
+
+                        {!collapsed && (
+
+                            <>
+
+                                <h2
+                                    className="
+                                    font-semibold
+                                    "
+                                >
+                                    Trader Pro
+                                </h2>
+
+                                <p
+                                    className="
+                                    mt-1
+                                    text-xs
+                                    text-blue-100
+                                    "
+                                >
+                                    Trade Smarter.
+                                </p>
+
+                            </>
+
+                        )}
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </>
     );
+
 }

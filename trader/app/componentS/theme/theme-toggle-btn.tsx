@@ -22,6 +22,8 @@ export default function ThemeToggle() {
         transition
         hover:bg-gray-100
         dark:hover:bg-slate-800
+        text-black
+        dark:text-white
       "
     >
       {theme === "dark" ? (
