@@ -1,31 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "./themeProvider";
 
 export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(true);
+
+  // useEffect(() => {
+  //   setMounted(true);
+  // }, []);
+
+  if (!mounted) {
+    return (
+      <button className=" flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 "> Theme </button>
+    );
+  }
 
   return (
     <button
       onClick={toggleTheme}
-      className="
-        flex
-        items-center
-        gap-2
-        rounded-lg
-        border
-        border-gray-300
-        dark:border-gray-700
-        px-4
-        py-2
-        transition
-        hover:bg-gray-100
-        dark:hover:bg-slate-800
-        text-black
-        dark:text-white
-      "
-    >
+      className=" flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 transition hover:bg-gray-100 dark:hover:bg-slate-800 text-black dark:text-white " >
       {theme === "dark" ? (
         <>
           <Sun size={18} />

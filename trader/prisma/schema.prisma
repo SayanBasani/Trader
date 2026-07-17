@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum VerificationType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+
+model User {
+
+  id String @id @default(cuid())
+
+  email String @unique @db.VarChar(255)
+
+  username String @unique @db.VarChar(50)
+
+  password String
+
+  role UserRole @default(USER)
+
+  status UserStatus @default(PENDING)
+
+  emailVerified Boolean @default(false)
+
+  lastLogin DateTime?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  profile UserProfile?
+
+}
+
+model UserProfile {
+
+  id String @id @default(cuid())
+
+  userId String @unique
+
+  firstName String? @db.VarChar(100)
+
+  lastName String? @db.VarChar(100)
+
+  phone String? @db.VarChar(20)
+
+  avatar String?
+
+  country String? @db.VarChar(100)
+
+  state String? @db.VarChar(100)
+
+  city String? @db.VarChar(100)
+
+  timezone String? @db.VarChar(100)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}
+
+
+

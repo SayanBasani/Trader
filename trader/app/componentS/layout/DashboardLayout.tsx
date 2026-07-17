@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 
@@ -25,7 +25,7 @@ export default function DashboardLayout({
 
         {/* Main */}
 
-        <main className="p-4 sm:p-6 lg:p-8 pt-24 lg:pt-24 min-h-screen ">
+        <main className="p-4 sm:p-6 lg:p-8 pt-24 sm:pt-24 lg:pt-24 min-h-screen ">
           <div className="mx-auto max-w-[1600px]">
             {children}
           </div>
