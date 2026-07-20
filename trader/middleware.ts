@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
-import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE, ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN, COOKIE_OPTIONS, } from "@/lib/auth/cookies";
+import { ENV } from "@/lib/config/env";
 
-export const secret = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET!);
+export const secret = new TextEncoder().encode(ENV.JWT_ACCESS_SECRET!);
 
 export async function middleware(request: NextRequest) {
 
@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
+    const refreshToken = request.cookies.get(ENV.REFRESH_TOKEN_COOKIE)?.value;
 
     if(!refreshToken){ return NextResponse.redirect(new URL("/login", request.url) )};
 

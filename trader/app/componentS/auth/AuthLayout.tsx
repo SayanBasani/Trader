@@ -8,7 +8,7 @@ export default function AuthLayout({
 
             {/* Left Section */}
 
-            <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-sky-600 via-blue-700 to-indigo-900 p-12 text-white lg:flex">
+            <section className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-linear-to-br from-sky-600 via-blue-700 to-indigo-900 p-12 text-white lg:flex">
 
                 {/* Blur */}
                 

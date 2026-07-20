@@ -1,19 +1,17 @@
 import { SignJWT, jwtVerify, type JWTPayload } from "jose";
-const accessSecret = process.env.JWT_ACCESS_SECRET;
-const refreshSecret = process.env.JWT_REFRESH_SECRET;
-export const ACCESS_TOKEN_LIFETIME_MINUTES = Number(process.env.ACCESS_TOKEN_EXPIRES_IN) ?? 15;
+import { ENV } from "../config/env";
 
-if (!accessSecret) {
+if (!ENV.JWT_ACCESS_SECRET) {
     throw new Error("JWT_ACCESS_SECRET is missing in .env");
 }
 
-if (!refreshSecret) {
+if (!ENV.JWT_REFRESH_SECRET) {
     throw new Error("JWT_REFRESH_SECRET is missing in .env");
 }
 
-const accessSecretKey = new TextEncoder().encode(accessSecret);
+const accessSecretKey = new TextEncoder().encode(ENV.JWT_ACCESS_SECRET);
 
-const refreshSecretKey = new TextEncoder().encode(refreshSecret);
+const refreshSecretKey = new TextEncoder().encode(ENV.JWT_REFRESH_SECRET);
 
 export interface JwtPayload extends JWTPayload {
     userId: string;

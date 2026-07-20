@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db/prisma";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken, } from "@/lib/auth/jwt";
 import { hashToken } from "@/lib/auth/tokenHash";
-import { REFRESH_TOKEN_EXPIRES_IN } from "@/lib/auth/cookies";
+import { ENV } from "../config/env";
 
 type RefreshSessionResult = {
     accessToken: string;
@@ -84,7 +84,7 @@ export async function refreshSession(
                 ipAddress: ipAddress ?? session.ipAddress,
                 expiresAt: new Date(
                     Date.now() +
-                    1000 * 60 * 60 * 24 * Number(REFRESH_TOKEN_EXPIRES_IN)
+                    1000 * 60 * 60 * 24 * Number(ENV.REFRESH_TOKEN_EXPIRES_IN)
                 ),
                 lastUsedAt: new Date(),
             },

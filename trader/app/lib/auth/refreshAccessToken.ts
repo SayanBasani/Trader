@@ -3,6 +3,7 @@ import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '@
 import { prisma } from '@/lib/db/prisma';
 import { setAccessTokenCookie, setAuthCookies } from './cookies';
 import { hashToken } from './tokenHash';
+import { ENV } from '../config/env';
 
 export default async function refreshAccessToken() {
     const cookieStore = await cookies();
@@ -40,7 +41,7 @@ export default async function refreshAccessToken() {
                 tokenHash: newTokenHash,
                 userId: user.id,
                 expiresAt: new Date(
-                    Date.now() + 1000 * 60 * 60 * 24 * 7
+                    Date.now() + 1000 * 60 * 60 * 24 * ENV.REFRESH_TOKEN_EXPIRES_IN
                 ),
             },
         });

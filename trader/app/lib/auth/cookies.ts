@@ -1,9 +1,5 @@
 import { cookies } from "next/headers";
-
-export const ACCESS_TOKEN_COOKIE = "accessToken";
-export const REFRESH_TOKEN_COOKIE = "refreshToken";
-export const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN ?? "15";
-export const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN ?? "7";
+import { ENV } from "../config/env";
 
 export const COOKIE_OPTIONS = {
     httpOnly: true,
@@ -16,23 +12,23 @@ export async function setAuthCookies(accessToken: string, refreshToken: string) 
 
     const cookieStore = await cookies();
 
-    cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
+    cookieStore.set(ENV.ACCESS_TOKEN_COOKIE, accessToken, {
         ...COOKIE_OPTIONS,
-        maxAge: 60 * Number(ACCESS_TOKEN_EXPIRES_IN)
+        maxAge: 60 * ENV.ACCESS_TOKEN_EXPIRES_IN
     });
 
-    cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+    cookieStore.set(ENV.REFRESH_TOKEN_COOKIE, refreshToken, {
         ...COOKIE_OPTIONS,
-        maxAge: 60 * 60 * 24 * Number(REFRESH_TOKEN_EXPIRES_IN)
+        maxAge: 60 * 60 * 24 * ENV.REFRESH_TOKEN_EXPIRES_IN
     });
 
 }
 export async function setAccessTokenCookie(accessToken: string) {
     const cookieStore = await cookies();
 
-    cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
+    cookieStore.set(ENV.ACCESS_TOKEN_COOKIE, accessToken, {
         ...COOKIE_OPTIONS,
-        maxAge: 60 * Number(ACCESS_TOKEN_EXPIRES_IN),
+        maxAge: 60 * ENV.ACCESS_TOKEN_EXPIRES_IN,
     });
 }
 
@@ -40,12 +36,12 @@ export async function clearAuthCookies() {
 
     const cookieStore = await cookies();
 
-    cookieStore.set(ACCESS_TOKEN_COOKIE, "", {
+    cookieStore.set(ENV.ACCESS_TOKEN_COOKIE, "", {
         ...COOKIE_OPTIONS,
         maxAge: 0,
     });
 
-    cookieStore.set(REFRESH_TOKEN_COOKIE, "", {
+    cookieStore.set(ENV.REFRESH_TOKEN_COOKIE, "", {
         ...COOKIE_OPTIONS,
         maxAge: 0,
     });

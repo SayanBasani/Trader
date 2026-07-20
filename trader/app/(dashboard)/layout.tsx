@@ -1,6 +1,6 @@
 import DashboardLayout from "@/componentS/layout/DashboardLayout";
-import { ACCESS_TOKEN_LIFETIME_MINUTES } from "@/lib/auth/jwt";
 import { requireUser } from "@/lib/auth/requireUser";
+import { ENV } from "@/lib/config/env";
 
 export default async function Layout({
   children,
@@ -12,7 +12,7 @@ export default async function Layout({
       <div className="bg-gray-100 dark:bg-slate-950">
         <DashboardLayout 
           user={user}  
-          accessTokenLifetime={ACCESS_TOKEN_LIFETIME_MINUTES}
+          accessTokenLifetime={ENV.ACCESS_TOKEN_EXPIRES_IN}
         >
             {children}
         </DashboardLayout>
