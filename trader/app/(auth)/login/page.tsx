@@ -33,8 +33,8 @@ export default function LoginPage() {
               credentials: "include",
 
               body: JSON.stringify({
-                  email,
-                  password
+                  email: email.trim().toLowerCase(),
+                  password: password
               })
 
           });
@@ -49,7 +49,7 @@ export default function LoginPage() {
 
           }
 
-          router.push("/home");
+          router.replace("/home");
 
       }
       catch {
@@ -181,12 +181,12 @@ export default function LoginPage() {
 
         {/* Login */}
 
-        <button className="w-full  rounded-xl  bg-gradient-to-r  from-blue-600  to-indigo-600  py-4  font-semibold  text-white  transition  hover:scale-[1.02]  hover:shadow-xl  "  >
-          {
-              loading
-                  ? "Logging in..."
-                  : "Login"
-          }
+        <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 font-semibold text-white transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70"
+        >
+            {loading ? "Logging in..." : "Login"}
         </button>
         {
             error && (

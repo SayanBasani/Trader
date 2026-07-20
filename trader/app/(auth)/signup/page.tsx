@@ -47,7 +47,14 @@ export default function SignupPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            username: formData.username.trim(),
+            email: formData.email.trim().toLowerCase(),
+            password: formData.password,
+            confirmPassword: formData.confirmPassword
+        }),
       });
 
       const result = await response.json();
@@ -58,9 +65,16 @@ export default function SignupPage() {
       }
 
       setMessage(result.message);
-
+      setFormData({
+          firstName: "",
+          lastName: "",
+          username: "",
+          email: "",
+          password: "",
+          confirmPassword: ""
+      });
       setTimeout(() => {
-        router.push("/login");
+        router.replace("/login");
       }, 1500);
     } catch (err) {
       console.error(err);

@@ -1,37 +1,53 @@
 import { cookies } from "next/headers";
 
-const ACCESS_TOKEN_COOKIE = "accessToken";
+export const ACCESS_TOKEN_COOKIE = "accessToken";
+export const REFRESH_TOKEN_COOKIE = "refreshToken";
+export const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN ?? "15";
+export const REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN ?? "7";
 
-const REFRESH_TOKEN_COOKIE = "refreshToken";
+export const COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    path: "/",
+};
 
 export async function setAuthCookies(accessToken: string, refreshToken: string) {
 
     const cookieStore = await cookies();
 
     cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 15
+        ...COOKIE_OPTIONS,
+        maxAge: 60 * Number(ACCESS_TOKEN_EXPIRES_IN)
     });
 
     cookieStore.set(REFRESH_TOKEN_COOKIE, refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7
+        ...COOKIE_OPTIONS,
+        maxAge: 60 * 60 * 24 * Number(REFRESH_TOKEN_EXPIRES_IN)
     });
 
+}
+export async function setAccessTokenCookie(accessToken: string) {
+    const cookieStore = await cookies();
+
+    cookieStore.set(ACCESS_TOKEN_COOKIE, accessToken, {
+        ...COOKIE_OPTIONS,
+        maxAge: 60 * Number(ACCESS_TOKEN_EXPIRES_IN),
+    });
 }
 
 export async function clearAuthCookies() {
 
     const cookieStore = await cookies();
 
-    cookieStore.delete(ACCESS_TOKEN_COOKIE);
+    cookieStore.set(ACCESS_TOKEN_COOKIE, "", {
+        ...COOKIE_OPTIONS,
+        maxAge: 0,
+    });
 
-    cookieStore.delete(REFRESH_TOKEN_COOKIE);
+    cookieStore.set(REFRESH_TOKEN_COOKIE, "", {
+        ...COOKIE_OPTIONS,
+        maxAge: 0,
+    });
 
 }

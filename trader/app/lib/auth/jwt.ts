@@ -21,6 +21,7 @@ export interface JwtPayload extends JWTPayload {
     email: string;
     role: string;
 }
+
 export async function generateAccessToken(payload: JwtPayload) {
 
     return await new SignJWT(payload)

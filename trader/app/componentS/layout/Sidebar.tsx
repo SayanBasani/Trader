@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-import { LayoutDashboard, ChartCandlestick, Wallet, Bell, Settings, User, Menu, ChevronLeft, ChevronRight, X, } from "lucide-react";
+import { LayoutDashboard, ChartCandlestick, Wallet, Bell, Settings, User, ChevronLeft, ChevronRight, X, } from "lucide-react";
 
 const menu = [
     {
@@ -290,7 +290,7 @@ export default function Sidebar({
                     <div
                         className="
                         rounded-xl
-                        bg-gradient-to-r
+                        bg-linear-to-r
                         from-blue-500
                         to-indigo-600
                         p-4

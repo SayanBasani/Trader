@@ -2,12 +2,16 @@
 import { useState } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import { SafeUser } from "@/lib/types/user";
+
+interface DashboardLayoutProps {
+    children: React.ReactNode;
+    user: SafeUser;
+}
 
 export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+  children,user,
+}: DashboardLayoutProps) {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <div className=" min-h-screen bg-slate-100 dark:bg-[#0B1220] transition-colors duration-300 " >
@@ -21,7 +25,7 @@ export default function DashboardLayout({
       >
         {/* Header */}
 
-        <Header collapsed={collapsed} />
+        <Header collapsed={collapsed} user={user} />
 
         {/* Main */}
 

@@ -1,3 +1,5 @@
+import { apiFetch } from "@/lib/api/apiFetch";
+
 export default function HomePage() {
   const stats = [
     {
@@ -40,7 +42,8 @@ export default function HomePage() {
     "NVIDIA AI demand continues to rise.",
     "Fed expected to keep interest rates unchanged.",
   ];
-
+  
+   
   return (
     <div className="space-y-8">
 

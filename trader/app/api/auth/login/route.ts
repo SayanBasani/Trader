@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db/prisma";
 import { comparePassword } from "@/lib/password/password";
 import { generateAccessToken, generateRefreshToken } from "@/lib/auth/jwt";
 import { setAuthCookies } from "@/lib/auth/cookies";
+import { hashToken } from "@/lib/auth/tokenHash";
+import { getDeviceId } from "@/lib/auth/device";
 
 export async function POST(request: Request) {
     try {
@@ -55,6 +57,30 @@ export async function POST(request: Request) {
             email: user.email,
             role: user.role
         });
+
+        const hashedRefreshToken = hashToken(refreshToken);
+
+        const userAgent = request.headers.get("user-agent") ?? "Unknown";
+
+        const ipAddress =
+            request.headers.get("x-forwarded-for") ??
+            request.headers.get("x-real-ip") ?? "Unknown";
+        const deviceName = userAgent;
+        await prisma.refreshToken.create({
+            data: {
+                tokenHash: hashedRefreshToken,
+                userId: user.id,
+                deviceId: await getDeviceId(),
+                deviceName,
+                ipAddress,
+                userAgent,
+                expiresAt: new Date(
+                    Date.now() + 1000 * 60 * 60 * 24 * 7
+                ),
+                lastUsedAt: new Date(),
+            },
+        });
+
         await setAuthCookies(accessToken, refreshToken);
         await prisma.user.update({
             where: {
