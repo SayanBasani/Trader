@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-
 import { LayoutDashboard, ChartCandlestick, Wallet, Bell, Settings, User, ChevronLeft, ChevronRight, X, } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
+import ThemeToggle from "../theme/theme-toggle-btn";
+import { useTheme } from "next-themes";
+
 
 const menu = [
     {
@@ -40,7 +43,6 @@ const menu = [
 ];
 
 
-import { Dispatch, SetStateAction } from "react";
 
 interface SidebarProps {
   collapsed: boolean;
@@ -54,151 +56,66 @@ export default function Sidebar({
 }: SidebarProps) {
 
     const pathname = usePathname();
-
-    // const [collapsed, setCollapsed] = useState(false);
-
     const [mobileOpen, setMobileOpen] = useState(false);
+    const {
+        resolvedTheme,
+        setTheme,
+    } = useTheme();
 
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return null;
+    }
     return (
         <>
             {/* Mobile Button */}
 
-            <button
-                onClick={() => setMobileOpen(true)}
-                className="
-                fixed
-                left-1
-                top-4
-                z-50
-                rounded-lg
-                bg-blue-600
-                p-2
-                text-white
-                shadow-lg
-                lg:hidden
-                "
-            >
+            <button onClick={() => setMobileOpen(true)} className="fixed left-1 top-4 z-50 rounded-lg bg-blue-600 p-2 text-white shadow-lg lg:hidden " >
                 <ChevronRight size={22} />
             </button>
 
             {/* Mobile Background */}
 
             {mobileOpen && (
-
-                <div
-                    onClick={() => setMobileOpen(false)}
-                    className="
-                    fixed
-                    inset-0
-                    z-40
-                    bg-black/50
-                    lg:hidden
-                    "
-                />
-
+                <div onClick={() => setMobileOpen(false)} className=" fixed inset-0 z-40 bg-black/50 lg:hidden " />
             )}
 
             {/* Sidebar */}
 
-            <aside
-                className={`
-                fixed
-                left-0
-                top-0
-                z-50
-                h-screen
-
-                border-r
-
-                border-gray-200
-                dark:border-slate-700
-
-                bg-white
-                dark:bg-[#101827]
-
-                transition-all
-                duration-300
-
+            <aside className={` fixed left-0 top-0 z-50 h-screen border-r border-gray-200 dark:border-slate-700 bg-white dark:bg-[#101827] transition-all duration-300
                 ${collapsed ? "w-20" : "w-72"}
-
-                ${
-                    mobileOpen
-                        ? "translate-x-0"
-                        : "-translate-x-full lg:translate-x-0"
-                }
-                `}
+                ${ mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0" } `}
             >
 
                 {/* Logo */}
 
-                <div
-                    className="
-                    flex
-                    h-20
-                    items-center
-                    justify-between
-                    border-b
-                    border-gray-200
-                    px-5
-                    dark:border-slate-700
-                    "
-                >
-
+                <div className=" flex h-20 items-center justify-between border-b border-gray-200 px-5 dark:border-slate-700 " >
                     {!collapsed && (
-
                         <div>
+                            <Link href="/">
+                                <h1 className=" text-2xl font-bold text-blue-600 " >
+                                    Trader Pro
+                                </h1>
 
-                            <h1
-                                className="
-                                text-2xl
-                                font-bold
-                                text-blue-600
-                                "
-                            >
-                                Trader Pro
-                            </h1>
-
-                            <p
-                                className="
-                                text-sm
-                                text-gray-500
-                                dark:text-gray-400
-                                "
-                            >
-                                Trading Dashboard
-                            </p>
-
+                                <p className=" text-sm text-gray-500 dark:text-gray-400 " >
+                                    Trading Dashboard
+                                </p>
+                            </Link>
                         </div>
-
                     )}
 
-                    <button
-                        onClick={() => setCollapsed(!collapsed)}
-                        className="
-                        hidden
-                        rounded-lg
-                        p-2
-                        transition
-                        hover:bg-gray-100
-                        dark:hover:bg-slate-700
-                        lg:block
-                        "
-                    >
+                    <button onClick={() => setCollapsed(!collapsed)} className="text-black dark:text-white hidden rounded-lg p-2 transition hover:bg-gray-100 dark:hover:bg-slate-700 lg:block " >
                         {collapsed
                             ? <ChevronRight size={20}/>
                             : <ChevronLeft size={20}/>}
                     </button>
 
-                    <button
-                        onClick={() => setMobileOpen(false)}
-                        className="
-                        rounded-lg
-                        p-2
-                        lg:hidden
-                        text-black
-                        dark:text-white
-                        "
-                    >
+                    <button onClick={() => setMobileOpen(false)} className=" rounded-lg p-2 lg:hidden text-black dark:text-white " >
                         <X size={20}/>
                     </button>
 
@@ -206,120 +123,94 @@ export default function Sidebar({
 
                 {/* Menu */}
 
-                <nav
-                    className="
-                    mt-6
-                    space-y-2
-                    px-3
-                    "
-                >
-
+                <nav className=" mt-6 space-y-2 px-3 " >
                     {menu.map((item)=>{
-
                         const Icon=item.icon;
-
                         const active=pathname===item.href;
-
                         return(
 
-                            <Link
-
-                                key={item.href}
-
-                                href={item.href}
-
-                                className={`
-                                flex
-                                items-center
-                                rounded-xl
-                                px-4
-                                py-3
-
-                                transition-all
-
+                            <Link key={item.href} href={item.href} className={`flex items-center rounded-xl px-4 py-3 transition-all
                                 ${
                                     active
                                     ?
-
                                     "bg-blue-600 text-white shadow-lg"
-
                                     :
-
                                     "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-slate-700"
                                 }
                                 `}
                             >
-
-                                <Icon
-                                    size={22}
-                                />
-
+                                <Icon size={22} />
                                 {!collapsed&&(
-
-                                    <span
-                                        className="
-                                        ml-4
-                                        font-medium
-                                        "
-                                    >
+                                    <span className="ml-4 font-medium " >
                                         {item.title}
                                     </span>
-
                                 )}
-
                             </Link>
-
                         );
-
                     })}
 
                 </nav>
 
                 {/* Bottom */}
 
-                <div
-                    className="
-                    absolute
-                    bottom-5
-                    left-0
-                    w-full
-                    px-4
-                    "
-                >
-
+                <div className=" absolute bottom-5 left-0 w-full px-4 mt-6 space-y-2" >
                     <div
-                        className="
-                        rounded-xl
-                        bg-linear-to-r
-                        from-blue-500
-                        to-indigo-600
-                        p-4
-                        text-white
-                        "
-                    >
+    onClick={() => {
+
+    setTheme(
+
+        resolvedTheme === "dark"
+
+            ? "light"
+
+            : "dark"
+
+    );
+
+}}
+    className="bg-linear-to-r flex cursor-pointer items-center rounded-xl px-4 py-3 transition-all text-black dark:text-white"
+>
+
+    <ThemeToggle
+        btnSize={25}
+    />
+
+    {
+
+        !collapsed && (
+
+            <span className="ml-4 font-medium">
+
+                {
+
+                    resolvedTheme === "dark"
+
+                        ? "Dark"
+
+                        : "Light"
+
+                }
+
+            </span>
+
+        )
+
+    }
+
+</div>
+
+                    <div className=" rounded-xl bg-linear-to-r from-blue-500 to-indigo-600 p-4 text-white " >
 
                         {!collapsed && (
 
                             <>
-
-                                <h2
-                                    className="
-                                    font-semibold
-                                    "
-                                >
+                                <h2 className=" font-semibold " >
                                     Trader Pro
                                 </h2>
 
-                                <p
-                                    className="
-                                    mt-1
-                                    text-xs
-                                    text-blue-100
-                                    "
-                                >
+                                <p className=" mt-1 text-xs text-blue-100 " >
                                     Trade Smarter.
                                 </p>
-
                             </>
 
                         )}

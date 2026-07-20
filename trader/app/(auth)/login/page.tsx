@@ -83,7 +83,7 @@ export default function LoginPage() {
 
       {/* Form */}
 
-      <form onSubmit={handleLogin} className="mt-10 space-y-6">
+      <form onSubmit={handleLogin} className="mt-10 space-y-6 text-gray-900 dark:text-white">
 
         {/* Email */}
 
@@ -94,7 +94,7 @@ export default function LoginPage() {
           </label>
 
           <div
-            className=" flex items-center rounded-xl border border-gray-300 bg-gray-50 px-4 dark:border-slate-700 dark:bg-slate-800 " >
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-50 px-4 dark:border-slate-700 dark:bg-slate-800 " >
 
             <Mail size={18} className="text-gray-400" />
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
                 placeholder="example@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-transparent px-3 py-4 outline-none"
+                className="w-full bg-transparent px-3 py-4 outline-none "
             />
 
           </div>
@@ -184,7 +184,7 @@ export default function LoginPage() {
         <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 font-semibold text-white transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 py-4 font-semibold text-white transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-70"
         >
             {loading ? "Logging in..." : "Login"}
         </button>

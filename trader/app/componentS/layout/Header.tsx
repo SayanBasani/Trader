@@ -32,7 +32,7 @@ export default function Header({collapsed,user}:SidebarProps) {
       };
   }, []);
   return (
-    <header className={` fixed top-0 right-0 z-30 h-20 w-full ${collapsed?"lg:w-[calc(100%-5rem)]":"lg:w-[calc(100%-18rem)]"} border-b border-gray-200 dark:border-slate-700 bg-white/90 dark:bg-[#101827]/90 backdrop-blur-xl transition-all `} >
+    <header className={`text-gray-900 dark:text-white fixed top-0 right-0 z-30 h-20 w-full ${collapsed?"lg:w-[calc(100%-5rem)]":"lg:w-[calc(100%-18rem)]"} border-b border-gray-200 dark:border-slate-700 bg-white/90 dark:bg-[#101827]/90 backdrop-blur-xl transition-all `} >
       <div className="flex h-full items-center justify-between px-4 sm:px-6 lg:px-8  " >
         {/* Left */}
 
@@ -40,7 +40,7 @@ export default function Header({collapsed,user}:SidebarProps) {
 
           <div>
             <h1
-              className=" text-2xl font-bold text-gray-900 dark:text-white " >
+              className=" text-2xl font-bold" >
               Dashboard
             </h1>
 
@@ -74,7 +74,7 @@ export default function Header({collapsed,user}:SidebarProps) {
 
           {/* Theme */}
 
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
 
           {/* Notification */}
 
@@ -87,7 +87,7 @@ export default function Header({collapsed,user}:SidebarProps) {
           {/* Profile */}
           <div className="relative" ref={profileRef}>
             <button onClick={()=> setProfileOpen(!profileOpen)} className=" flex items-center gap-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 transition hover:bg-gray-100 dark:hover:bg-slate-700 " >
-              <div className=" flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white font-semibold">
+              <div className=" flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-semibold">
                 {user?.username.charAt(0).toUpperCase()}
               </div>
               <div className="hidden sm:block text-left">
@@ -98,7 +98,7 @@ export default function Header({collapsed,user}:SidebarProps) {
                   {user?.role}
                 </p>
               </div>
-              <ChevronDown size={18} className="hidden sm:block" />
+              <ChevronDown size={18} className="hidden sm:block " />
             </button>
             {profileOpen && (
 
