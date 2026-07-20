@@ -23,17 +23,5 @@ export async function getCurrentUser() {
     if (!accessToken){ return null; }
     if (accessToken) { 
         return await getUserFromAccessToken(accessToken);
-        // const user = await getUserFromAccessToken(accessToken);
-        // if (user) return user;
     }
-    console.log("this will go to set the acces token , it can make error for this in allow for server to set cookies");
-    
-    // const newAccessToken = await refreshAccessToken();
-    
-    // if (!newAccessToken) {
-    //     await clearAuthCookies();
-    //     return null;
-    // }
-    
-    // return await getUserFromAccessToken(newAccessToken);
 }

@@ -21,6 +21,8 @@ export async function GET(request: Request) {
             request.headers.get("x-real-ip") ??
             undefined;
         const tokens = await refreshSession(refreshToken, ipAddress);
+        console.log(tokens);
+        
         await setAuthCookies( tokens.accessToken, tokens.refreshToken );
 
         return NextResponse.json({ success: true, message: "Token refreshed.", }, { status: 200, } );

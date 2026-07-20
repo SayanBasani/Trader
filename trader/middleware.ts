@@ -32,11 +32,11 @@ export async function middleware(request: NextRequest) {
 
     if(!refreshToken){ return NextResponse.redirect(new URL("/login", request.url) )};
 
-    const refreshUrl = new URL("/auth/refresh", request.url);
+    // const refreshUrl = new URL("/auth/refresh", request.url);
 
-    refreshUrl.searchParams.set("redirect", pathname);
+    // refreshUrl.searchParams.set("redirect", pathname);
 
-    return NextResponse.redirect(refreshUrl);
+    // return NextResponse.redirect(refreshUrl);
 
 }
 
