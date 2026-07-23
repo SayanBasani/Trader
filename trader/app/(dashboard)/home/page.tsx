@@ -1,5 +1,3 @@
-import { apiFetch } from "@/lib/api/apiFetch";
-
 export default function HomePage() {
   const stats = [
     {

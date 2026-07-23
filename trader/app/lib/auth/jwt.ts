@@ -52,9 +52,7 @@ export async function verifyAccessToken(token: string) {
 }
 
 export async function verifyRefreshToken(token: string) {
-
     const { payload } = await jwtVerify(token, refreshSecretKey);
-
     return payload;
 
 }

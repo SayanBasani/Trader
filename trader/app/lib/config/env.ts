@@ -1,7 +1,7 @@
 export const ENV = {
     // App
     APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? "Trader Pro",
-    APP_URL: process.env.NEXTAUTH_URL ?? "http://localhost:3000",
+    APP_URL: process.env.APP_URL  ?? "http://localhost:3000",
 
     // Database
     DATABASE_URL: process.env.DATABASE_URL!,

@@ -28,6 +28,7 @@ export async function POST() {
     }
     catch (error) {
         console.error(error);
+        await clearAuthCookies();
         return NextResponse.json(
             { success: false, message: "Failed to logout." },
             { status: 500 } );

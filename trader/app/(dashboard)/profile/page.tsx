@@ -1,31 +1,48 @@
-"use client";
+import ProfileHeader from "@/componentS/profile/ProfileHeader";
+import TradingStats from "@/componentS/profile/TradingStats";
+import AccountInformation from "@/componentS/profile/AccountInformation";
+import SecurityCard from "@/componentS/profile/SecurityCard";
+import PreferencesCard from "@/componentS/profile/PreferencesCard";
+import { requireUser } from "@/lib/auth/requireUser";
 
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api/apiFetch";
+export default async function ProfilePage() {
 
-export default function ProfilePage() {
-
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
-
-        async function loadProfile() {
-
-            const response = await apiFetch("/api/auth/me");
-
-            const data = await response.json();
-
-            setUser(data);
-
-        }
-
-        loadProfile();
-
-    }, []);
+    const user = await requireUser();
 
     return (
-        <div className="grid">
-            {JSON.stringify(user)}
+
+        <div className="space-y-8">
+
+            <ProfileHeader
+                user={user}
+            />
+
+            <TradingStats />
+
+            <div className="grid gap-8 xl:grid-cols-5">
+
+                <div className="space-y-8 xl:col-span-3">
+
+                    <AccountInformation
+                        user={user}
+                    />
+
+                </div>
+
+                <div className="space-y-8 xl:col-span-2">
+
+                    <SecurityCard
+                        user={user}
+                    />
+
+                    <PreferencesCard />
+
+                </div>
+
+            </div>
+
         </div>
+
     );
+
 }

@@ -6,13 +6,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
-  const router = useRouter();
 
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-
   const [loading, setLoading] = useState(false);
-
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -63,8 +61,13 @@ export default function SignupPage() {
         setError(result.message || "Something went wrong.");
         return;
       }
-
+      console.log(result);
+      
       setMessage(result.message);
+      if (result.success){
+        router.push(`/check-email?email=${encodeURIComponent(result.data.email)}`);
+        // return NextResponse.redirect( new URL(`/check-email?email=${result.data.email}` ) );
+      }
       setFormData({
           firstName: "",
           lastName: "",
@@ -73,9 +76,9 @@ export default function SignupPage() {
           password: "",
           confirmPassword: ""
       });
-      setTimeout(() => {
-        router.replace("/login");
-      }, 1500);
+      // setTimeout(() => {
+      //   router.replace("/login");
+      // }, 1500);
     } catch (err) {
       console.error(err);
 

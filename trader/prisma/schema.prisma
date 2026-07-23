@@ -47,7 +47,8 @@ model User {
 
   profile UserProfile?
 
-  refreshTokens RefreshToken[]
+  refreshTokens           RefreshToken[]
+  emailVerificationTokens EmailVerificationToken[]
 }
 
 model UserProfile {
@@ -79,7 +80,6 @@ model UserProfile {
 }
 
 model RefreshToken {
-
   id String @id @default(cuid())
 
   tokenHash String @unique
@@ -102,7 +102,23 @@ model RefreshToken {
 
   revokedAt DateTime?
 
-  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model EmailVerificationToken {
+  id String @id @default(cuid())
+
+  tokenHash String @unique
+
+  userId String
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }

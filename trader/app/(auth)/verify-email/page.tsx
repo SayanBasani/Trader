@@ -1,94 +1,90 @@
 "use client";
 
 import Link from "next/link";
-import { MailCheck, RefreshCcw } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { CheckCircle2, XCircle, Clock3 } from "lucide-react";
 
 export default function VerifyEmailPage() {
-    return (
-        <div>
 
-            {/* Icon */}
+    const searchParams = useSearchParams();
+
+    const status = searchParams.get("status");
+
+    let title = "";
+    let description = "";
+    let icon = null;
+
+    switch (status) {
+
+        case "success":
+
+            title = "Email Verified";
+
+            description =
+                "Your email has been verified successfully. You can now log in.";
+
+            icon =
+                <CheckCircle2 size={60} className="text-green-600" />;
+
+            break;
+
+        case "expired":
+
+            title = "Verification Link Expired";
+
+            description =
+                "Your verification link has expired. Please request another email.";
+
+            icon =
+                <Clock3 size={60} className="text-yellow-500" />;
+
+            break;
+
+        default:
+
+            title = "Invalid Verification Link";
+
+            description =
+                "The verification link is invalid or has already been used.";
+
+            icon =
+                <XCircle size={60} className="text-red-600" />;
+
+    }
+
+    return (
+
+        <div className="text-center">
 
             <div className="flex justify-center">
 
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-
-                    <MailCheck size={48} className="text-blue-600" />
-
-                </div>
+                {icon}
 
             </div>
 
-            {/* Header */}
+            <h1 className="mt-8 text-4xl font-bold">
 
-            <div className="mt-8 text-center">
+                {title}
 
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-                    Verify Your Email
-                </h1>
+            </h1>
 
-                <p className="mt-4 text-gray-500 dark:text-gray-400">
-                    We have sent a verification link to your email address.
-                </p>
+            <p className="mt-4 text-gray-500">
 
-                <p className="mt-2 font-semibold text-blue-600">
-                    example@email.com
-                </p>
+                {description}
 
-            </div>
+            </p>
 
-            {/* Information */}
+            <Link
+                href="/login"
+                className="mt-10 inline-block rounded-xl bg-blue-600 px-8 py-4 font-semibold text-white"
+            >
 
-            <div className="mt-10 rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
+                Go to Login
 
-                <h2 className="text-lg font-semibold text-blue-700 dark:text-blue-300">
-                    Next Steps
-                </h2>
-
-                <ul className="mt-4 space-y-3 text-sm text-gray-700 dark:text-gray-300">
-
-                    <li>📧 Check your inbox for the verification email.</li>
-
-                    <li>🔗 Click the verification link.</li>
-
-                    <li>✅ Once verified, return here and continue.</li>
-
-                </ul>
-
-            </div>
-
-            {/* Buttons */}
-
-            <div className="mt-8 space-y-4">
-
-                <button className="w-full rounded-xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 py-4 font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                    I have Verified My Email
-                </button>
-
-                <button className="flex w-full items-center justify-center gap-3 rounded-xl border border-gray-300 py-4 font-semibold transition hover:bg-gray-100 dark:border-slate-700 dark:hover:bg-slate-800">
-
-                    <RefreshCcw size={18} />
-
-                    Resend Verification Email
-
-                </button>
-
-            </div>
-
-            {/* Footer */}
-
-            <div className="mt-8 text-center">
-
-                <p className="text-sm text-gray-500">
-                    Wrong email?
-                </p>
-
-                <Link href="/signup" className="mt-2 inline-block font-semibold text-blue-600 hover:underline">
-                    Back to Signup
-                </Link>
-
-            </div>
+            </Link>
 
         </div>
+
     );
+
 }
