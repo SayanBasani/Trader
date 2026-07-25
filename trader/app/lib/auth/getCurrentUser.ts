@@ -12,6 +12,15 @@ export async function getUserFromAccessToken(accessToken:string){
             where: { id: payload.userId as string },
             include: { profile: true }
         });
+        
+        if (
+            user?.passwordChangedAt &&
+            payload.iat &&
+            payload.iat * 1000 < user.passwordChangedAt.getTime()
+        ) {
+            return null;
+        }
+
         return user;
     }
     catch { return null; }

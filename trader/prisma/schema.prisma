@@ -33,6 +33,8 @@ model User {
 
   password String
 
+  passwordChangedAt DateTime?
+
   role UserRole @default(USER)
 
   status UserStatus @default(PENDING)
@@ -49,6 +51,7 @@ model User {
 
   refreshTokens           RefreshToken[]
   emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model UserProfile {
@@ -121,4 +124,22 @@ model EmailVerificationToken {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model PasswordResetToken {
+
+  id String @id @default(cuid())
+
+  tokenHash String @unique
+
+  userId String
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+
 }

@@ -10,6 +10,7 @@ export async function GET(request: Request) {
         const refreshToken = cookieStore.get("refreshToken")?.value;
 
         if (!refreshToken) {
+            await clearAuthCookies();
             return NextResponse.json(
                 { success: false, message: "Refresh token missing." }, 
                 { status: 401 } 
@@ -21,17 +22,14 @@ export async function GET(request: Request) {
             request.headers.get("x-real-ip") ??
             undefined;
         const tokens = await refreshSession(refreshToken, ipAddress);
-        // console.log(tokens);
-        
+
         await setAuthCookies( tokens.accessToken, tokens.refreshToken );
 
         return NextResponse.json({ success: true, message: "Token refreshed.", }, { status: 200, } );
     }
     catch (error) {
         console.error(error);
-
         await clearAuthCookies();
-
         return NextResponse.json(
             { success: false, message: "Session expired." }, 
             { status: 401 }
