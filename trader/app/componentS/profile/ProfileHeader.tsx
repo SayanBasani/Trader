@@ -1,7 +1,8 @@
 "use client";
 
 import { SafeUser } from "@/lib/types/user";
-import { Camera, Mail, ShieldCheck, CalendarDays, Pencil } from "lucide-react";
+import { Mail, ShieldCheck, CalendarDays, Pencil } from "lucide-react";
+import ProfileAvatar from "@/componentS/profile/ProfileAvatar";
 
 interface ProfileHeaderProps {
     user: SafeUser;
@@ -29,25 +30,21 @@ export default function ProfileHeader({
 
                         <div className="relative">
 
-                            <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-blue-600 text-5xl font-bold text-white shadow-xl dark:border-[#162033]">
-
-                                {user.username.charAt(0).toUpperCase()}
-
-                            </div>
-
-                            <button className="absolute bottom-1 right-1 rounded-full bg-blue-600 p-2 text-white shadow-lg transition hover:scale-105">
-
-                                <Camera size={18} />
-
-                            </button>
+                            <ProfileAvatar
+                                avatar={user.profile?.avatar ?? null}
+                            />
 
                         </div>
 
                         <div>
 
-                            <h1 className="text-3xl font-bold text-gray-200 dark:text-white">
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
 
-                                {user.profile?.firstName} {user.profile?.lastName}
+                                {
+                                    user.profile?.firstName || user.profile?.lastName
+                                        ? `${user.profile?.firstName ?? ""} ${user.profile?.lastName ?? ""}`.trim()
+                                        : user.username
+                                }
 
                             </h1>
 
@@ -77,8 +74,11 @@ export default function ProfileHeader({
 
                     </div>
 
-                    <button className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-medium text-white transition hover:bg-blue-700">
-
+                    <button
+                        type="button"
+                        disabled
+                        className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-medium text-white opacity-50 cursor-not-allowed"
+                    >
                         <Pencil size={18} />
 
                         Edit Profile

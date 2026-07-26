@@ -246,7 +246,7 @@ export default function ResetPasswordPage() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 py-4 font-semibold text-white transition hover:shadow-xl disabled:opacity-60"
+                    className="w-full rounded-xl bg-linear-to-r from-sky-600 via-blue-600 to-indigo-700 py-4 font-semibold text-white transition hover:shadow-xl disabled:opacity-60"
                 >
 
                     {

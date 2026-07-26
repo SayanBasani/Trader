@@ -1,4 +1,10 @@
+"use client";
+
+import { useState } from "react";
+
 import { SafeUser } from "@/lib/types/user";
+import EditProfileForm from "./EditProfileForm";
+
 import {
     User,
     Mail,
@@ -16,6 +22,49 @@ interface AccountInformationProps {
 export default function AccountInformation({
     user,
 }: AccountInformationProps) {
+
+    const [isEditing, setIsEditing] = useState(false);
+
+    if (isEditing) {
+
+        return (
+
+            <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-[#162033]">
+
+                <div className="mb-8">
+
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+
+                        Edit Profile
+
+                    </h2>
+
+                    <p className="mt-1 text-sm text-gray-500">
+
+                        Update your personal information.
+
+                    </p>
+
+                </div>
+
+                <EditProfileForm
+                    initialData={{
+                        firstName: user.profile?.firstName ?? "",
+                        lastName: user.profile?.lastName ?? "",
+                        phone: user.profile?.phone ?? "",
+                        country: user.profile?.country ?? "",
+                        state: user.profile?.state ?? "",
+                        city: user.profile?.city ?? "",
+                        timezone: user.profile?.timezone ?? "",
+                    }}
+                    onCancel={() => setIsEditing(false)}
+                />
+
+            </section>
+
+        );
+
+    }
 
     return (
 
@@ -39,7 +88,10 @@ export default function AccountInformation({
 
                 </div>
 
-                <button className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
+                <button
+                    onClick={() => setIsEditing(true)}
+                    className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
+                >
 
                     <Pencil size={18} />
 

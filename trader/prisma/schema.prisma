@@ -67,6 +67,8 @@ model UserProfile {
 
   avatar String?
 
+  avatarPublicId String?
+
   country String? @db.VarChar(100)
 
   state String? @db.VarChar(100)

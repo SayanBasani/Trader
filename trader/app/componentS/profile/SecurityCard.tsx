@@ -1,4 +1,6 @@
+"use client"
 import { SafeUser } from "@/lib/types/user";
+import { useState } from "react";
 import {
     ShieldCheck,
     Lock,
@@ -6,7 +8,11 @@ import {
     Smartphone,
     LogOut,
     KeyRound,
+    ChevronDown,
+    ChevronUp,
 } from "lucide-react";
+import ChangePasswordForm from "./ChangePasswordForm";
+import ActiveSessions from "./ActiveSessions";
 
 interface SecurityCardProps {
     user: SafeUser;
@@ -15,6 +21,7 @@ interface SecurityCardProps {
 export default function SecurityCard({
     user,
 }: SecurityCardProps) {
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
 
     return (
 
@@ -38,19 +45,28 @@ export default function SecurityCard({
 
             <div className="grid gap-5">
 
-                <SecurityItem
-                    icon={<Lock size={22} />}
-                    title="Password"
-                    description="Last changed recently"
-                >
-
-                    <button className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700">
-
-                        Change Password
-
-                    </button>
-
-                </SecurityItem>
+                <div className="rounded-2xl border border-gray-200 dark:border-slate-700">
+                    <SecurityItem icon={<Lock size={22} />} title="Password" description="Change your account password." >
+                        <button
+                            onClick={() => setShowPasswordForm(!showPasswordForm) }
+                            className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                        >
+                            Change Password
+                            {
+                                showPasswordForm
+                                    ? <ChevronUp size={18} />
+                                    : <ChevronDown size={18} />
+                            }
+                        </button>
+                    </SecurityItem>
+                    {
+                        showPasswordForm && (
+                            <div className="border-t border-gray-200 p-5 dark:border-slate-700">
+                                <ChangePasswordForm />
+                            </div>
+                        )
+                    }
+                </div>
 
                 <SecurityItem
                     icon={<Mail size={22} />}
@@ -99,6 +115,8 @@ export default function SecurityCard({
                     </span>
 
                 </SecurityItem>
+                
+                <ActiveSessions />
 
                 <SecurityItem
                     icon={<KeyRound size={22} />}

@@ -20,6 +20,7 @@ export async function refreshSession(
     const session = await prisma.refreshToken.findUnique({
         where: {
             tokenHash: hashedRefreshToken,
+            revokedAt: null,
         },
     });
 
