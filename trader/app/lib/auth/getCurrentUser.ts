@@ -4,17 +4,43 @@ import { prisma } from "@/lib/db/prisma";
 
 import { verifyAccessToken } from "@/lib/auth/jwt";
 
-
-export async function getUserFromAccessToken(accessToken:string){
+export async function getUserFromAccessToken(accessToken: string) {
     try {
         const payload = await verifyAccessToken(accessToken);
-        const user = await prisma.user.findUnique({
-            where: { id: payload.userId as string },
-            include: { profile: true }
+
+        const session = await prisma.refreshToken.findUnique({
+            where: {
+                id: payload.sessionId,
+            },
         });
-        
+
+        if (!session) {
+            return null;
+        }
+
+        if (session.revokedAt) {
+            return null;
+        }
+
+        if (session.expiresAt < new Date()) {
+            return null;
+        }
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: payload.userId,
+            },
+            include: {
+                profile: true,
+            },
+        });
+
+        if (!user) {
+            return null;
+        }
+
         if (
-            user?.passwordChangedAt &&
+            user.passwordChangedAt &&
             payload.iat &&
             payload.iat * 1000 < user.passwordChangedAt.getTime()
         ) {
@@ -23,14 +49,19 @@ export async function getUserFromAccessToken(accessToken:string){
 
         return user;
     }
-    catch { return null; }
+    catch {
+        return null;
+    }
 }
 
 export async function getCurrentUser() {
     const cookieStore = await cookies();
+
     const accessToken = cookieStore.get("accessToken")?.value;
-    if (!accessToken){ return null; }
-    if (accessToken) { 
-        return await getUserFromAccessToken(accessToken);
+
+    if (!accessToken) {
+        return null;
     }
+
+    return await getUserFromAccessToken(accessToken);
 }

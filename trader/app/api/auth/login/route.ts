@@ -5,6 +5,7 @@ import { generateAccessToken, generateRefreshToken } from "@/lib/auth/jwt";
 import { setAuthCookies } from "@/lib/auth/cookies";
 import { hashToken } from "@/lib/auth/tokenHash";
 import { getDeviceId } from "@/lib/auth/device";
+import { createId } from "@paralleldrive/cuid2";
 
 export async function POST(request: Request) {
     try {
@@ -46,16 +47,27 @@ export async function POST(request: Request) {
                 }
             );
         }
+
+        // const refreshToken = await generateRefreshToken({
+        //     userId: user.id,
+        //     email: user.email,
+        //     role: user.role,
+        // });
+
+        const sessionId = createId();
+
         const accessToken = await generateAccessToken({
             userId: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            sessionId,
         });
 
         const refreshToken = await generateRefreshToken({
             userId: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
+            sessionId,
         });
 
         const hashedRefreshToken = hashToken(refreshToken);
@@ -64,10 +76,14 @@ export async function POST(request: Request) {
 
         const ipAddress =
             request.headers.get("x-forwarded-for") ??
-            request.headers.get("x-real-ip") ?? "Unknown";
+            request.headers.get("x-real-ip") ??
+            "Unknown";
+
         const deviceName = userAgent;
+
         await prisma.refreshToken.create({
             data: {
+                id: sessionId,
                 tokenHash: hashedRefreshToken,
                 userId: user.id,
                 deviceId: await getDeviceId(),
@@ -75,13 +91,15 @@ export async function POST(request: Request) {
                 ipAddress,
                 userAgent,
                 expiresAt: new Date(
-                    Date.now() + 1000 * 60 * 60 * 24 * 7
+                    Date.now() +
+                    1000 * 60 * 60 * 24 * 7
                 ),
                 lastUsedAt: new Date(),
             },
         });
 
         await setAuthCookies(accessToken, refreshToken);
+                
         await prisma.user.update({
             where: {
                 id: user.id

@@ -3,17 +3,34 @@ import { NextResponse } from "next/server";
 import { requireUser } from "@/lib/auth/requireUser";
 import { prisma } from "@/lib/db/prisma";
 import { parseUserAgent } from "@/lib/auth/session";
+import { cookies } from "next/headers";
+import { verifyAccessToken } from "@/lib/auth/jwt";
 
 export async function GET() {
 
     try {
+
         const user = await requireUser();
+
+        const cookieStore = await cookies();
+
+        const accessToken = cookieStore.get("accessToken")?.value;
+
+        let currentSessionId: string | null = null;
+
+        if (accessToken) {
+            const payload = await verifyAccessToken(accessToken);
+            currentSessionId = payload.sessionId;
+        }
+
         const sessions = await prisma.refreshToken.findMany({
             where: {
                 userId: user.id,
                 revokedAt: null,
             },
-            orderBy: { lastUsedAt: "desc", },
+            orderBy: {
+                lastUsedAt: "desc",
+            },
             select: {
                 id: true,
                 deviceId: true,
@@ -25,8 +42,10 @@ export async function GET() {
                 expiresAt: true,
             },
         });
+
         const formattedSessions = sessions.map((session) => {
-            const parsed = parseUserAgent( session.userAgent );
+
+            const parsed = parseUserAgent(session.userAgent);
 
             return {
                 id: session.id,
@@ -40,7 +59,7 @@ export async function GET() {
                 createdAt: session.createdAt,
                 lastUsedAt: session.lastUsedAt,
                 expiresAt: session.expiresAt,
-                isCurrent: false,
+                isCurrent: session.id === currentSessionId,
             };
         });
 
@@ -48,15 +67,20 @@ export async function GET() {
             success: true,
             data: formattedSessions,
         });
+
     }
     catch (error) {
+
         console.error(error);
+
         return NextResponse.json(
             {
                 success: false,
                 message: "Unable to load sessions.",
             },
-            { status: 500, }
+            {
+                status: 500,
+            }
         );
     }
 }

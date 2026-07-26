@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import ChangePasswordForm from "./ChangePasswordForm";
 import ActiveSessions from "./ActiveSessions";
+import { useRouter } from "next/navigation";
 
 interface SecurityCardProps {
     user: SafeUser;
@@ -22,6 +23,33 @@ export default function SecurityCard({
     user,
 }: SecurityCardProps) {
     const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const router = useRouter();
+    const [loggingOut, setLoggingOut] = useState(false);
+
+    async function logoutOtherDevices() {
+        try {
+            setLoggingOut(true);
+
+            const response = await fetch("/api/security/logout-all", {
+                method: "POST",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message);
+            }
+
+            router.refresh();
+        }
+        catch (error) {
+            console.error(error);
+            alert("Unable to logout other devices.");
+        }
+        finally {
+            setLoggingOut(false);
+        }
+    }
 
     return (
 
@@ -140,10 +168,12 @@ export default function SecurityCard({
 
                 >
 
-                    <button className="rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700">
-
-                        Logout All
-
+                    <button
+                        onClick={logoutOtherDevices}
+                        disabled={loggingOut}
+                        className="rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {loggingOut ? "Logging Out..." : "Logout All"}
                     </button>
 
                 </SecurityItem>
