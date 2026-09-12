@@ -11,7 +11,9 @@ export interface RefreshTokenPayload extends JWTPayload {
     userId: string;
     email: string;
     role: string;
+    sessionId: string;
 }
+
 export interface JwtPayload extends JWTPayload {
     userId: string;
     email: string;
