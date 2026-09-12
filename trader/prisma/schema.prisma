@@ -52,6 +52,7 @@ model User {
   refreshTokens           RefreshToken[]
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens PasswordResetToken[]
+  watchlistItems WatchlistItem[]
 }
 
 model UserProfile {
@@ -144,4 +145,19 @@ model PasswordResetToken {
   
   @@index([userId])
 
+}
+
+model WatchlistItem {
+  id String @id @default(cuid())
+
+  userId String
+
+  symbol String @db.VarChar(20)
+
+  createdAt DateTime @default(now())
+
+  user User @relation( fields: [userId], references: [id], onDelete: Cascade )
+
+  @@unique([userId, symbol])
+  @@index([userId])
 }
