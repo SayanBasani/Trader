@@ -60,7 +60,7 @@ export default function Navbar() {
 
             <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 lg:px-8">
 
-                <Link href="/" className="text-3xl font-extrabold text-blue-600">
+                <Link href="/home" className="text-3xl font-extrabold text-blue-600">
                     Trader Pro
                 </Link>
 

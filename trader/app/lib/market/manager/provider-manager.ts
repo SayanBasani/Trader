@@ -1,20 +1,51 @@
-import type { MarketProvider } from "../interfaces/market-provider";
-import { ProviderRegistry } from "./provider-registry";
+import type {
+    MarketProvider,
+} from "@/lib/market/interfaces/market-provider";
+
+import {
+    MarketProviderName,
+} from "@/lib/market/config/providers";
+
+import {
+    MarketErrorAction,
+    MarketHttpError,
+} from "@/lib/market/utils/errors";
+
+import {
+    MarketOperation,
+} from "@/lib/market/manager/market-operation";
+
+import {
+    ProviderCapabilities,
+    PROVIDER_CAPABILITIES,
+    supportsOperation,
+} from "@/lib/market/manager/provider-capabilities";
+
+import {
+    ProviderRegistry,
+} from "@/lib/market/manager/provider-registry";
 
 export class ProviderManager {
+
     constructor(
         private readonly registry: ProviderRegistry,
-        private readonly defaultProvider: string,
+        private readonly defaultProvider: MarketProviderName,
+        private readonly fallbackOrder: readonly MarketProviderName[],
     ) {}
 
-    getProvider(name?: string): MarketProvider {
-        const provider = this.registry.get(
-            name ?? this.defaultProvider,
-        );
+    getProvider(
+        name?: MarketProviderName,
+    ): MarketProvider {
+
+        const providerName =
+            name ?? this.defaultProvider;
+
+        const provider =
+            this.registry.get(providerName);
 
         if (!provider) {
             throw new Error(
-                `Market provider "${name ?? this.defaultProvider}" is not registered.`,
+                `Market provider "${providerName}" is not registered.`,
             );
         }
 
@@ -23,5 +54,133 @@ export class ProviderManager {
 
     getProviders(): MarketProvider[] {
         return this.registry.getAll();
+    }
+
+    getCapabilities(
+        providerName: MarketProviderName,
+    ): ProviderCapabilities {
+
+        return PROVIDER_CAPABILITIES[
+            providerName
+        ];
+    }
+
+    getProviderForOperation(
+        operation: MarketOperation,
+    ): MarketProvider {
+
+        for (
+            const providerName
+            of this.getOrderedProviderNames()
+        ) {
+
+            if (
+                !supportsOperation(
+                    providerName,
+                    operation,
+                )
+            ) {
+                continue;
+            }
+
+            const provider =
+                this.registry.get(providerName);
+
+            if (provider) {
+                return provider;
+            }
+        }
+
+        throw new Error(
+            `No registered provider supports "${operation}".`,
+        );
+    }
+
+    async executeWithFallback<T>(
+        operation: MarketOperation,
+        request: (
+            provider: MarketProvider,
+        ) => Promise<T>,
+    ): Promise<T> {
+
+        let lastError: unknown;
+
+        for (
+            const providerName
+            of this.getOrderedProviderNames()
+        ) {
+
+            if (
+                !supportsOperation(
+                    providerName,
+                    operation,
+                )
+            ) {
+                continue;
+            }
+
+            const provider =
+                this.registry.get(providerName);
+
+            if (!provider) {
+                continue;
+            }
+
+            try {
+
+                return await request(provider);
+
+            } catch (error) {
+
+                lastError = error;
+
+                if (
+                    !this.shouldFailover(error)
+                ) {
+                    throw error;
+                }
+
+                console.warn(
+                    `[ProviderManager] Provider "${providerName}" failed for "${operation}". Trying fallback.`,
+                );
+            }
+        }
+
+        if (lastError) {
+            throw lastError;
+        }
+
+        throw new Error(
+            `No available provider supports "${operation}".`,
+        );
+    }
+
+    private getOrderedProviderNames(): MarketProviderName[] {
+
+        return [
+            ...new Set([
+                this.defaultProvider,
+                ...this.fallbackOrder,
+            ]),
+        ];
+    }
+
+    private shouldFailover(
+        error: unknown,
+    ): boolean {
+
+        if (
+            !(error instanceof MarketHttpError)
+        ) {
+            return false;
+        }
+
+        return (
+            error.action ===
+                MarketErrorAction.FAILOVER
+            ||
+            error.action ===
+                MarketErrorAction.RETRY
+        );
     }
 }

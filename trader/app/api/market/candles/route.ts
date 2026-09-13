@@ -6,20 +6,15 @@ export async function GET(
     request: NextRequest,
 ) {
     try {
-        const params =
-            request.nextUrl.searchParams;
+        const params = request.nextUrl.searchParams;
 
-        const symbol =
-            params.get("symbol");
+        const symbol = params.get("symbol");
 
-        const resolution =
-            params.get("resolution");
+        const resolution = params.get("resolution");
 
-        const from =
-            Number(params.get("from"));
+        const from = Number(params.get("from"));
 
-        const to =
-            Number(params.get("to"));
+        const to = Number(params.get("to"));
 
         if (
             !symbol?.trim() ||
@@ -39,16 +34,14 @@ export async function GET(
             );
         }
 
-        const service =
-            new MarketService();
+        const service = new MarketService();
 
-        const data =
-            await service.getHistoricalCandles(
-                symbol.trim().toUpperCase(),
-                resolution,
-                from,
-                to,
-            );
+        const data = await service.getHistoricalCandles(
+                        symbol.trim().toUpperCase(),
+                        resolution,
+                        from,
+                        to,
+                    );
 
         return NextResponse.json({
             success: true,

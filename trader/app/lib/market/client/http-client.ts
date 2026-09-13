@@ -106,7 +106,8 @@ export class HttpClient {
                 throw new MarketHttpError({
                     message: response.statusText,
                     status: response.status,
-                    url: url.toString(),
+                    // url: url.toString(),
+                    url: this.sanitizeUrl(url),
                     type: classification.type,
                     action: classification.action,
                 });
@@ -136,7 +137,8 @@ export class HttpClient {
                 throw new MarketHttpError({
                     message: "Request timed out.",
                     status: 408,
-                    url: url.toString(),
+                    // url: url.toString(),
+                    url: this.sanitizeUrl(url),
                     type: MarketErrorType.TIMEOUT,
                     action: MarketErrorAction.RETRY,
                     cause: error,

@@ -1,45 +1,21 @@
 "use client";
 
-import {
-    useEffect,
-    useState,
-} from "react";
-
-import type {
-    MarketStatus,
-} from "@/lib/market/types";
-
-import {
-    getMarketStatus,
-} from "@/lib/api/market";
+import { useEffect, useState, } from "react";
+import type { MarketStatus, } from "@/lib/market/types";
+import { getMarketStatus, } from "@/lib/api/market";
 
 export default function MarketStatusCard() {
 
-    const [status, setStatus] =
-        useState<MarketStatus | null>(
-            null,
-        );
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [error, setError] =
-        useState("");
-
-    useEffect(() => {
-        loadStatus();
-    }, []);
+    const [status, setStatus] = useState<MarketStatus | null>( null, );
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    useEffect(() => { loadStatus(); }, []);
 
     async function loadStatus() {
         try {
             setLoading(true);
             setError("");
-
-            const data =
-                await getMarketStatus(
-                    "US",
-                );
-
+            const data = await getMarketStatus( "NASDAQ", );
             setStatus(data);
         }
         catch (error) {
@@ -49,9 +25,7 @@ export default function MarketStatusCard() {
                     : "Unable to load market status.",
             );
         }
-        finally {
-            setLoading(false);
-        }
+        finally { setLoading(false); }
     }
 
     return (

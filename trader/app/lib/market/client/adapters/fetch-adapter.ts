@@ -33,11 +33,11 @@ export class FetchAdapter implements HttpAdapter {
                 message: "Network request failed.",
                 status: 0,
                 url:
-                    typeof input === "string"
-                        ? input
-                        : input instanceof URL
-                            ? input.toString()
-                            : input.url,
+                    this.sanitizeUrl(
+                        this.getUrl(
+                            input,
+                        ),
+                    ),
                 type: MarketErrorType.NETWORK,
                 action: MarketErrorAction.RETRY,
                 cause: error,
@@ -45,6 +45,64 @@ export class FetchAdapter implements HttpAdapter {
 
         }
 
+    }
+
+    private getUrl(
+        input: RequestInfo | URL,
+    ): string {
+        if (
+            typeof input === "string"
+        ) {
+            return input;
+        }
+
+        if (
+            input instanceof URL
+        ) {
+            return input.toString();
+        }
+
+        return input.url;
+    }
+
+    private sanitizeUrl(
+        rawUrl: string,
+    ): string {
+        try {
+
+            const url =
+                new URL(rawUrl);
+
+            const sensitiveParameters = [
+                "token",
+                "apikey",
+                "api_key",
+                "key",
+                "access_token",
+                "secret",
+            ];
+
+            for (
+                const parameter
+                of sensitiveParameters
+            ) {
+                if (
+                    url.searchParams.has(
+                        parameter,
+                    )
+                ) {
+                    url.searchParams.set(
+                        parameter,
+                        "[REDACTED]",
+                    );
+                }
+            }
+
+            return url.toString();
+
+        } catch {
+            return "[INVALID_URL]";
+        }
     }
 
 }

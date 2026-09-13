@@ -112,6 +112,7 @@ export class FinnhubProvider extends BaseMarketProvider {
     async getQuote(
         symbol: string,
     ): Promise<Quote> {
+
         const response =
             await this.get<FinnhubQuoteResponse>(
                 "quote",
@@ -120,18 +121,47 @@ export class FinnhubProvider extends BaseMarketProvider {
                 },
             );
 
+        if (
+            typeof response.c !== "number" ||
+            response.c <= 0
+        ) {
+            throw new Error(
+                `Finnhub quote unavailable for "${symbol}".`,
+            );
+        }
+
         return {
             symbol,
-            price: response.c ?? 0,
-            change: response.d ?? 0,
-            changePercent: response.dp ?? 0,
-            open: response.o ?? 0,
-            high: response.h ?? 0,
-            low: response.l ?? 0,
-            previousClose: response.pc ?? 0,
-            volume: 0,
-            timestamp: response.t ?? 0,
-            currency: "",
+
+            price:
+                response.c,
+
+            change:
+                response.d ?? 0,
+
+            changePercent:
+                response.dp ?? 0,
+
+            open:
+                response.o ?? 0,
+
+            high:
+                response.h ?? 0,
+
+            low:
+                response.l ?? 0,
+
+            previousClose:
+                response.pc ?? 0,
+
+            volume:
+                0,
+
+            timestamp:
+                response.t ?? 0,
+
+            currency:
+                "",
         };
     }
 

@@ -102,7 +102,7 @@ app/
 ├── (dashboard)/
 ├── componentS/
 ├── lib/
-├── middleware.ts
+├── 
 
 prisma/
 public/

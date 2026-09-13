@@ -9,7 +9,7 @@ export async function GET(
         const exchange =
             request.nextUrl.searchParams.get(
                 "exchange",
-            ) ?? undefined;
+            ) ?? "NASDAQ";
 
         const service =
             new MarketService();

@@ -21,13 +21,9 @@ export async function GET(
             );
         }
 
-        const service =
-            new MarketService();
+        const service = new MarketService();
 
-        const data =
-            await service.searchStocks(
-                query.trim(),
-            );
+        const data = await service.searchStocks( query.trim(), );
 
         return NextResponse.json({
             success: true,

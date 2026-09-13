@@ -60,7 +60,7 @@ const providers = {
     fmp: {
         enabled: true,
         apiKey: getOptionalEnv("FMP_API_KEY"),
-        baseUrl: "https://financialmodelingprep.com/api/v3/",
+        baseUrl: "https://financialmodelingprep.com/stable/",
         timeout: 10000,
         retry: 2,
         priority: 3,

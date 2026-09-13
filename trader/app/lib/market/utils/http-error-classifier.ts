@@ -1,7 +1,7 @@
 import {
     MarketErrorAction,
     MarketErrorType,
-} from "./errors";
+} from "@/lib/market/utils/errors";
 
 export interface HttpErrorClassification {
     type: MarketErrorType;
@@ -25,7 +25,13 @@ export function classifyHttpError(
         case 403:
             return {
                 type: MarketErrorType.AUTH,
-                action: MarketErrorAction.STOP,
+                action: MarketErrorAction.FAILOVER,
+            };
+
+        case 402:
+            return {
+                type: MarketErrorType.UNKNOWN,
+                action: MarketErrorAction.FAILOVER,
             };
 
         case 408:
