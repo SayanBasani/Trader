@@ -4,6 +4,10 @@ import { MarketProviderName, } from "@/lib/market/config/providers";
 import { MarketOperation, ProviderManager, } from "@/lib/market/manager";
 import { ServiceContainer, } from "@/lib/market/container/service-container";
 import { getUsMarketStatus,} from "@/lib/market/utils/us-market-status";
+import { normalizeSymbol, } from "@/lib/market/utils/symbol-utils";
+import { AssetType, MarketRegion, } from "@/lib/market/models/asset";
+import { ExchangeCode, } from "@/lib/market/models/exchange";
+import { aggregateCandles, resolveMarketInterval, } from "@/lib/market/utils/interval-utils";
 
 export class MarketService {
 
@@ -30,39 +34,107 @@ export class MarketService {
 
     async getQuote( symbol: string, ): Promise<Quote> {
 
+        const normalized =
+            normalizeSymbol(
+                symbol,
+            );
+
         return this.providerManager.executeWithFallback(
             MarketOperation.QUOTE,
+
             (provider) =>
                 provider.getQuote(
-                    symbol,
+                    normalized.providerSymbol,
                 ),
+
+            {
+                assetType: AssetType.STOCK,
+                region:
+                    normalized.exchange === ExchangeCode.NSE ||
+                    normalized.exchange === ExchangeCode.BSE
+                        ? MarketRegion.INDIA
+                        : MarketRegion.US,
+                exchange: normalized.exchange,
+            },
         );
     }
-
 
     async getCompany( symbol: string, ): Promise<Company> {
 
+        const normalized = normalizeSymbol( symbol, );
+
         return this.providerManager.executeWithFallback(
             MarketOperation.COMPANY,
+
             (provider) =>
                 provider.getCompany(
-                    symbol,
+                    normalized.providerSymbol,
                 ),
+
+            {
+                assetType: AssetType.STOCK,
+                region:
+                    normalized.exchange === ExchangeCode.NSE ||
+                    normalized.exchange === ExchangeCode.BSE
+                        ? MarketRegion.INDIA
+                        : MarketRegion.US,
+                exchange: normalized.exchange,
+            },
         );
     }
 
 
-    async getHistoricalCandles( symbol: string, resolution: string, from: number, to: number, ): Promise<Candles> {
+    async getHistoricalCandles(
+        symbol: string,
+        resolution: string,
+        from: number,
+        to: number,
+    ): Promise<Candles> {
 
-        return this.providerManager.executeWithFallback(
-            MarketOperation.CANDLES,
-            (provider) =>
-                provider.getHistoricalCandles(
-                    symbol,
-                    resolution,
-                    from,
-                    to,
-                ),
+        const normalized =
+            normalizeSymbol(
+                symbol,
+            );
+
+        const interval =
+            resolveMarketInterval(
+                resolution,
+            );
+
+        const candles =
+            await this.providerManager.executeWithFallback(
+                MarketOperation.CANDLES,
+
+                (provider) =>
+                    provider.getHistoricalCandles(
+                        normalized.providerSymbol,
+                        interval.resolution,
+                        from,
+                        to,
+                    ),
+
+                {
+                    assetType: AssetType.STOCK,
+                    region:
+                        normalized.exchange === ExchangeCode.NSE ||
+                        normalized.exchange === ExchangeCode.BSE
+                            ? MarketRegion.INDIA
+                            : MarketRegion.US,
+                    exchange:
+                        normalized.exchange,
+                },
+            );
+
+        if (
+            !interval.aggregate ||
+            !interval.bucketSeconds
+        ) {
+            return candles;
+        }
+
+        return aggregateCandles(
+            candles,
+            interval.bucketSeconds,
         );
     }
 

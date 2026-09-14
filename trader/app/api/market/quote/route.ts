@@ -1,55 +1,58 @@
-import { NextRequest, NextResponse } from "next/server";
+import {
+    MarketService,
+} from "@/lib/market/service";
 
-import { MarketService } from "@/lib/market/service";
+import {
+    marketError,
+    marketSuccess,
+} from "@/lib/market/utils/api-response";
 
 export async function GET(
-    request: NextRequest,
+    request: Request,
 ) {
+
     try {
-        const symbol =
-            request.nextUrl.searchParams.get(
-                "symbol",
+
+        const url =
+            new URL(
+                request.url,
             );
 
-        if (!symbol?.trim()) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message: "Symbol is required.",
-                },
-                {
-                    status: 400,
-                },
+        const symbol =
+            url.searchParams.get(
+                "symbol",
+            )?.trim();
+
+        if (!symbol) {
+            return marketError(
+                "Symbol is required.",
+                400,
             );
         }
 
         const service =
             new MarketService();
 
-        const data =
+        const quote =
             await service.getQuote(
-                symbol.trim().toUpperCase(),
+                symbol,
             );
 
-        return NextResponse.json({
-            success: true,
-            data,
-        });
-    }
-    catch (error) {
+        return marketSuccess(
+            quote,
+        );
+
+    } catch (error) {
+
         console.error(
-            "Market quote error:",
+            "[API /market/quote]",
             error,
         );
 
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Unable to load quote.",
-            },
-            {
-                status: 500,
-            },
+        return marketError(
+            error instanceof Error
+                ? error.message
+                : "Market quote failed.",
         );
     }
 }

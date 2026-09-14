@@ -8,6 +8,12 @@ export enum MarketProviderName {
     POLYGON = "polygon",
 
     ALPHA_VANTAGE = "alpha-vantage",
+
+    UPSTOX = "upstox",
+
+    ANGEL_ONE = "angel-one",
+
+    FYERS = "fyers",
 }
 
 export const MARKET_PROVIDERS = [
@@ -16,9 +22,13 @@ export const MARKET_PROVIDERS = [
     MarketProviderName.FMP,
     MarketProviderName.POLYGON,
     MarketProviderName.ALPHA_VANTAGE,
+    MarketProviderName.UPSTOX,
+    MarketProviderName.ANGEL_ONE,
+    MarketProviderName.FYERS,
 ] as const;
 
-export const DEFAULT_PROVIDER = MarketProviderName.FINNHUB;
+export const DEFAULT_PROVIDER =
+    MarketProviderName.FINNHUB;
 
 export const PROVIDER_FALLBACK_ORDER = [
     MarketProviderName.FINNHUB,
@@ -26,4 +36,7 @@ export const PROVIDER_FALLBACK_ORDER = [
     MarketProviderName.FMP,
     MarketProviderName.POLYGON,
     MarketProviderName.ALPHA_VANTAGE,
+    MarketProviderName.UPSTOX,
+    MarketProviderName.ANGEL_ONE,
+    MarketProviderName.FYERS,
 ] as const;

@@ -1,29 +1,10 @@
-import type {
-    MarketProvider,
-} from "@/lib/market/interfaces/market-provider";
-
-import {
-    MarketProviderName,
-} from "@/lib/market/config/providers";
-
-import {
-    MarketErrorAction,
-    MarketHttpError,
-} from "@/lib/market/utils/errors";
-
-import {
-    MarketOperation,
-} from "@/lib/market/manager/market-operation";
-
-import {
-    ProviderCapabilities,
-    PROVIDER_CAPABILITIES,
-    supportsOperation,
-} from "@/lib/market/manager/provider-capabilities";
-
-import {
-    ProviderRegistry,
-} from "@/lib/market/manager/provider-registry";
+import type { MarketProvider, } from "@/lib/market/interfaces/market-provider";
+import { MarketProviderName, } from "@/lib/market/config/providers";
+import { MarketErrorAction, MarketHttpError, } from "@/lib/market/utils/errors";
+import { MarketOperation, } from "@/lib/market/manager/market-operation";
+import { ProviderCapabilities, PROVIDER_CAPABILITIES, supportsOperation, } from "@/lib/market/manager/provider-capabilities";
+import { ProviderRegistry, } from "@/lib/market/manager/provider-registry";
+import { getPreferredProviders, type ProviderRoutingContext, } from "@/lib/market/manager/provider-routing";
 
 export class ProviderManager {
 
@@ -33,22 +14,16 @@ export class ProviderManager {
         private readonly fallbackOrder: readonly MarketProviderName[],
     ) {}
 
-    getProvider(
-        name?: MarketProviderName,
-    ): MarketProvider {
+    getProvider( name?: MarketProviderName, ): MarketProvider {
 
-        const providerName =
-            name ?? this.defaultProvider;
-
-        const provider =
-            this.registry.get(providerName);
+        const providerName = name ?? this.defaultProvider;
+        const provider = this.registry.get(providerName);
 
         if (!provider) {
             throw new Error(
                 `Market provider "${providerName}" is not registered.`,
             );
         }
-
         return provider;
     }
 
@@ -67,11 +42,12 @@ export class ProviderManager {
 
     getProviderForOperation(
         operation: MarketOperation,
+        context: ProviderRoutingContext = {},
     ): MarketProvider {
 
         for (
             const providerName
-            of this.getOrderedProviderNames()
+            of this.getOrderedProviderNames( context, )
         ) {
 
             if (
@@ -101,13 +77,14 @@ export class ProviderManager {
         request: (
             provider: MarketProvider,
         ) => Promise<T>,
+        context: ProviderRoutingContext = {},
     ): Promise<T> {
 
         let lastError: unknown;
 
         for (
             const providerName
-            of this.getOrderedProviderNames()
+            of this.getOrderedProviderNames( context, )
         ) {
 
             if (
@@ -155,10 +132,18 @@ export class ProviderManager {
         );
     }
 
-    private getOrderedProviderNames(): MarketProviderName[] {
+    private getOrderedProviderNames(
+        context: ProviderRoutingContext = {},
+    ): MarketProviderName[] {
+
+        const preferredProviders =
+            getPreferredProviders(
+                context,
+            );
 
         return [
             ...new Set([
+                ...preferredProviders,
                 this.defaultProvider,
                 ...this.fallbackOrder,
             ]),

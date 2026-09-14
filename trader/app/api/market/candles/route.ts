@@ -1,67 +1,110 @@
-import { NextRequest, NextResponse } from "next/server";
+import {
+    MarketService,
+} from "@/lib/market/service";
 
-import { MarketService } from "@/lib/market/service";
+import {
+    marketError,
+    marketSuccess,
+} from "@/lib/market/utils/api-response";
 
 export async function GET(
-    request: NextRequest,
+    request: Request,
 ) {
+
     try {
-        const params = request.nextUrl.searchParams;
 
-        const symbol = params.get("symbol");
+        const url =
+            new URL(
+                request.url,
+            );
 
-        const resolution = params.get("resolution");
+        const symbol =
+            url.searchParams.get(
+                "symbol",
+            )?.trim();
 
-        const from = Number(params.get("from"));
+        const resolution =
+            url.searchParams.get(
+                "resolution",
+            )?.trim();
 
-        const to = Number(params.get("to"));
+        const fromValue =
+            url.searchParams.get(
+                "from",
+            );
 
-        if (
-            !symbol?.trim() ||
-            !resolution ||
-            !Number.isFinite(from) ||
-            !Number.isFinite(to)
-        ) {
-            return NextResponse.json(
-                {
-                    success: false,
-                    message:
-                        "symbol, resolution, from and to are required.",
-                },
-                {
-                    status: 400,
-                },
+        const toValue =
+            url.searchParams.get(
+                "to",
+            );
+
+        if (!symbol) {
+            return marketError(
+                "Symbol is required.",
+                400,
             );
         }
 
-        const service = new MarketService();
+        if (!resolution) {
+            return marketError(
+                "Resolution is required.",
+                400,
+            );
+        }
 
-        const data = await service.getHistoricalCandles(
-                        symbol.trim().toUpperCase(),
-                        resolution,
-                        from,
-                        to,
-                    );
+        const from =
+            Number(
+                fromValue,
+            );
 
-        return NextResponse.json({
-            success: true,
-            data,
-        });
-    }
-    catch (error) {
+        const to =
+            Number(
+                toValue,
+            );
+
+        if (
+            !Number.isFinite(from) ||
+            !Number.isFinite(to)
+        ) {
+            return marketError(
+                "Valid from and to timestamps are required.",
+                400,
+            );
+        }
+
+        if (from >= to) {
+            return marketError(
+                "The from timestamp must be before the to timestamp.",
+                400,
+            );
+        }
+
+        const service =
+            new MarketService();
+
+        const candles =
+            await service.getHistoricalCandles(
+                symbol,
+                resolution,
+                from,
+                to,
+            );
+
+        return marketSuccess(
+            candles,
+        );
+
+    } catch (error) {
+
         console.error(
-            "Market candles error:",
+            "[API /market/candles]",
             error,
         );
 
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Unable to load historical candles.",
-            },
-            {
-                status: 500,
-            },
+        return marketError(
+            error instanceof Error
+                ? error.message
+                : "Historical candle request failed.",
         );
     }
 }

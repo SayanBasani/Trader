@@ -3,30 +3,20 @@ import { FetchAdapter } from "@/lib/market/client/adapters";
 
 import { MARKET_ENV } from "@/lib/market/config/env";
 
-import {
-    MarketProviderName,
-    PROVIDER_FALLBACK_ORDER,
-} from "@/lib/market/config/providers";
+import { MarketProviderName, PROVIDER_FALLBACK_ORDER, } from "@/lib/market/config/providers";
 
 import type { MarketProvider } from "@/lib/market/interfaces/market-provider";
 
-import {
-    FinnhubProvider,
-} from "@/lib/market/providers/finnhub/finnhub-provider";
+import { FinnhubProvider, } from "@/lib/market/providers/finnhub/finnhub-provider";
 
-import {
-    TwelveDataProvider,
-} from "@/lib/market/providers/twelve-data/twelve-data-provider";
+import { TwelveDataProvider, } from "@/lib/market/providers/twelve-data/twelve-data-provider";
 
-import {
-    FmpProvider,
-} from "@/lib/market/providers/fmp";
+import { FmpProvider, } from "@/lib/market/providers/fmp";
 
-import {
-    ProviderManager,
-    ProviderRegistry,
-} from "@/lib/market/manager";
-
+import { ProviderManager, ProviderRegistry, } from "@/lib/market/manager";
+import { UpstoxProvider, } from "@/lib/market/providers/upstox";
+import { AngelOneProvider, } from "@/lib/market/providers/angel-one/angel-one-provider";
+import { FyersProvider, } from "@/lib/market/providers/fyers";
 
 export class ServiceContainer {
 
@@ -61,8 +51,15 @@ export class ServiceContainer {
             );
         }
 
-        if (!provider.apiKey) { throw new Error( `Missing API key for "${providerName}".`, );}
-
+        // if (!provider.apiKey) { throw new Error( `Missing API key for "${providerName}".`, );}
+        if (
+            !provider.apiKey &&
+            !provider.accessToken
+        ) {
+            throw new Error(
+                `Missing credentials for "${providerName}".`,
+            );
+        }
         const client =
             new HttpClient(
                 {
@@ -121,9 +118,9 @@ export class ServiceContainer {
             );
         }
 
-        if (!providerConfig.apiKey) {
+        if (!providerConfig.apiKey && !providerConfig.accessToken) {
             throw new Error(
-                `Missing API key for "${providerName}".`,
+                `Missing credentials for "${providerName}".`,
             );
         }
 
@@ -142,7 +139,7 @@ export class ServiceContainer {
                 provider =
                     new FinnhubProvider(
                         httpClient,
-                        providerConfig.apiKey,
+                        providerConfig.apiKey!,
                     );
 
                 break;
@@ -153,7 +150,7 @@ export class ServiceContainer {
                 provider =
                     new TwelveDataProvider(
                         httpClient,
-                        providerConfig.apiKey,
+                        providerConfig.apiKey!,
                     );
 
                 break;
@@ -164,12 +161,59 @@ export class ServiceContainer {
                 provider =
                     new FmpProvider(
                         httpClient,
+                        providerConfig.apiKey!,
+                    );
+
+                break;
+
+            case MarketProviderName.UPSTOX:
+                provider =
+                    new UpstoxProvider(
+                        httpClient,
+                        providerConfig.accessToken!,
+                    );
+                break;
+
+            case MarketProviderName.ANGEL_ONE:
+
+                if (
+                    !providerConfig.accessToken ||
+                    !providerConfig.apiKey
+                ) {
+                    throw new Error(
+                        "Missing ANGELONE_ACCESS_TOKEN or ANGELONE_API_KEY.",
+                    );
+                }
+
+                provider =
+                    new AngelOneProvider(
+                        httpClient,
+                        providerConfig.accessToken,
                         providerConfig.apiKey,
                     );
 
                 break;
 
 
+            case MarketProviderName.FYERS:
+
+                if (
+                    !providerConfig.accessToken ||
+                    !providerConfig.clientId
+                ) {
+                    throw new Error(
+                        "Missing FYERS_ACCESS_TOKEN or FYERS_CLIENT_ID.",
+                    );
+                }
+
+                provider =
+                    new FyersProvider(
+                        httpClient,
+                        providerConfig.accessToken,
+                        providerConfig.clientId,
+                    );
+
+                break;
             default:
 
                 throw new Error(
@@ -194,7 +238,15 @@ export class ServiceContainer {
 
         for ( const providerName of PROVIDER_FALLBACK_ORDER ) {
             const providerConfig = MARKET_ENV.providers[providerName];
-            if ( !providerConfig || !providerConfig.enabled || !providerConfig.apiKey ) {
+            if ( 
+                !providerConfig || 
+                !providerConfig.enabled || 
+                ( 
+                    !providerConfig.apiKey && 
+                    !providerConfig.accessToken 
+                ) 
+            ) 
+            {
                 continue;
             }
             try {

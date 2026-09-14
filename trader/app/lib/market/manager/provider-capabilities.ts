@@ -59,6 +59,31 @@ export const PROVIDER_CAPABILITIES: Record<
         [MarketOperation.NEWS]: false,
         [MarketOperation.STATUS]: false,
     },
+    [MarketProviderName.UPSTOX]: {
+        [MarketOperation.SEARCH]: true,
+        [MarketOperation.QUOTE]: true,
+        [MarketOperation.COMPANY]: true,
+        [MarketOperation.CANDLES]: true,
+        [MarketOperation.NEWS]: false,
+        [MarketOperation.STATUS]: false,
+    },
+    [MarketProviderName.ANGEL_ONE]: {
+        [MarketOperation.SEARCH]: true,
+        [MarketOperation.QUOTE]: true,
+        [MarketOperation.COMPANY]: true,
+        [MarketOperation.CANDLES]: true,
+        [MarketOperation.NEWS]: false,
+        [MarketOperation.STATUS]: false,
+    },
+
+    [MarketProviderName.FYERS]: {
+        [MarketOperation.SEARCH]: false,
+        [MarketOperation.QUOTE]: true,
+        [MarketOperation.COMPANY]: true,
+        [MarketOperation.CANDLES]: true,
+        [MarketOperation.NEWS]: false,
+        [MarketOperation.STATUS]: false,
+    },
 };
 
 export function supportsOperation(

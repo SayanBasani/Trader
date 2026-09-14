@@ -58,6 +58,31 @@ export const PROVIDER_ASSET_CAPABILITIES:
             [AssetType.FOREX]: false,
             [AssetType.COMMODITY]: false,
         },
+        [MarketProviderName.UPSTOX]: {
+            [AssetType.STOCK]: true,
+            [AssetType.CRYPTO]: false,
+            [AssetType.ETF]: true,
+            [AssetType.INDEX]: true,
+            [AssetType.FOREX]: false,
+            [AssetType.COMMODITY]: true,
+        },
+        [MarketProviderName.ANGEL_ONE]: {
+            [AssetType.STOCK]: true,
+            [AssetType.CRYPTO]: false,
+            [AssetType.ETF]: true,
+            [AssetType.INDEX]: true,
+            [AssetType.FOREX]: false,
+            [AssetType.COMMODITY]: true,
+        },
+
+        [MarketProviderName.FYERS]: {
+            [AssetType.STOCK]: true,
+            [AssetType.CRYPTO]: false,
+            [AssetType.ETF]: true,
+            [AssetType.INDEX]: true,
+            [AssetType.FOREX]: false,
+            [AssetType.COMMODITY]: true,
+        },
     };
 
 export function supportsAsset(

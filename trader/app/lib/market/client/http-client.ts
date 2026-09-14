@@ -66,6 +66,15 @@ export class HttpClient {
             method: "GET",
         });
     }
+    
+    async post<T>(
+        options: Omit<HttpRequestOptions, "method">,
+    ): Promise<HttpResponse<T>> {
+        return this.request<T>({
+            ...options,
+            method: "POST",
+        });
+    }
 
     protected async request<T>(
         options: HttpRequestOptions,
@@ -97,21 +106,38 @@ export class HttpClient {
                 );
 
             if (!response.ok) {
+            let errorMessage = response.statusText || `HTTP ${response.status}`;
 
-                const classification =
-                    classifyHttpError(
-                        response.status,
-                    );
+            try {
+                const errorBody = await response.clone().json();
 
-                throw new MarketHttpError({
-                    message: response.statusText,
-                    status: response.status,
-                    // url: url.toString(),
-                    url: this.sanitizeUrl(url),
-                    type: classification.type,
-                    action: classification.action,
-                });
+                if (typeof errorBody?.message === "string") {
+                    errorMessage = errorBody.message;
+                } else if (typeof errorBody?.code === "string") {
+                    errorMessage = errorBody.code;
+                } else if (typeof errorBody?.status === "string") {
+                    errorMessage = errorBody.status;
+                } else if (typeof errorBody?.error === "string") {
+                    errorMessage = errorBody.error;
+                }
+            } catch {
+                // Keep the HTTP status text when the provider does not return JSON.
             }
+
+            throw new MarketHttpError({
+                message: errorMessage,
+                status: response.status,
+                url: this.sanitizeUrl(url),
+                type:
+                    response.status === 429
+                        ? MarketErrorType.RATE_LIMIT
+                        : MarketErrorType.CLIENT,
+                action:
+                    response.status === 429
+                        ? MarketErrorAction.FAILOVER
+                        : MarketErrorAction.STOP,
+            });
+        }
 
             const data =
                 await this.parseResponse<T>(
