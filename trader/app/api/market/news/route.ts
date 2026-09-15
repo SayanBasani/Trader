@@ -1,6 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 import { MarketService } from "@/lib/market/service";
+
+import {
+    marketError,
+    marketSuccess,
+} from "@/lib/market/utils/api-response";
 
 export async function GET(
     request: NextRequest,
@@ -19,25 +24,20 @@ export async function GET(
                 category,
             );
 
-        return NextResponse.json({
-            success: true,
+        return marketSuccess(
             data,
-        });
+        );
     }
     catch (error) {
         console.error(
-            "Market news error:",
+            "[API /market/news]",
             error,
         );
 
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Unable to load market news.",
-            },
-            {
-                status: 500,
-            },
+        return marketError(
+            error instanceof Error
+                ? error.message
+                : "Unable to load market news.",
         );
     }
 }

@@ -72,12 +72,19 @@ export async function POST(
             );
         }
 
-        if (!/^[A-Z0-9.-]{1,20}$/.test(symbol)) {
+        if (
+            !/^[A-Z0-9.-]{1,20}(:NSE|:BSE)?$/.test(
+                symbol,
+            ) &&
+            !/^[A-Z0-9.-]{1,20}\/[A-Z0-9.-]{1,10}$/.test(
+                symbol,
+            )
+        ) {
             return NextResponse.json(
                 {
                     success: false,
                     message:
-                        "Invalid stock symbol.",
+                        "Invalid market symbol.",
                 },
                 {
                     status: 400,

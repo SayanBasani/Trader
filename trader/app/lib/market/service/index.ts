@@ -1,3 +1,1 @@
-export {
-    MarketService,
-} from "./market-service";
+export { MarketService, } from "./market-service";

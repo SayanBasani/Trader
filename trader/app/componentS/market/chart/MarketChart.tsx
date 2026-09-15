@@ -1,4 +1,8 @@
 "use client";
+import IndicatorLegend from "./IndicatorLegend";
+import {
+    calculateIndicators,
+} from "@/lib/market/indicators";
 
 import {
     forwardRef,
@@ -9,36 +13,29 @@ import {
 } from "react";
 
 import {
+    ColorType,
+    createChart,
+    CrosshairMode,
+    CandlestickSeries,
+    LineSeries,
     AreaSeries,
     BarSeries,
-    CandlestickSeries,
-    ColorType,
-    CrosshairMode,
-    createChart,
     HistogramSeries,
-    LineSeries,
     type IChartApi,
     type MouseEventParams,
     type Time,
 } from "lightweight-charts";
 
 import type { Candle } from "@/lib/market/types";
-
-import {
-    calculateIndicators,
-} from "@/lib/market/indicators";
-
-import type {
-    IndicatorConfig,
-} from "@/lib/market/indicators";
-
 import { useMarketCandles } from "./useMarketCandles";
-
 import type {
     ChartInterval,
     ChartRange,
     ChartType,
 } from "./types";
+import type {
+    IndicatorConfig,
+} from "@/lib/market/indicators";
 
 export interface MarketChartHandle {
     fitContent: () => void;
@@ -155,14 +152,16 @@ const MarketChart = forwardRef<
                 }
 
                 const center =
-                    (logicalRange.from +
-                        logicalRange.to) /
-                    2;
+                    (
+                        logicalRange.from +
+                        logicalRange.to
+                    ) / 2;
 
                 const halfRange =
-                    (logicalRange.to -
-                        logicalRange.from) /
-                    2;
+                    (
+                        logicalRange.to -
+                        logicalRange.from
+                    ) / 2;
 
                 const newHalfRange =
                     halfRange * 0.8;
@@ -171,6 +170,7 @@ const MarketChart = forwardRef<
                     from:
                         center -
                         newHalfRange,
+
                     to:
                         center +
                         newHalfRange,
@@ -196,14 +196,16 @@ const MarketChart = forwardRef<
                 }
 
                 const center =
-                    (logicalRange.from +
-                        logicalRange.to) /
-                    2;
+                    (
+                        logicalRange.from +
+                        logicalRange.to
+                    ) / 2;
 
                 const halfRange =
-                    (logicalRange.to -
-                        logicalRange.from) /
-                    2;
+                    (
+                        logicalRange.to -
+                        logicalRange.from
+                    ) / 2;
 
                 const newHalfRange =
                     halfRange * 1.25;
@@ -212,6 +214,7 @@ const MarketChart = forwardRef<
                     from:
                         center -
                         newHalfRange,
+
                     to:
                         center +
                         newHalfRange,
@@ -227,7 +230,8 @@ const MarketChart = forwardRef<
             symbol: symbol ?? "",
             resolution:
                 getResolution(interval),
-            days: getRangeDays(range),
+            days:
+                getRangeDays(range),
         });
 
         const candles =
@@ -269,6 +273,17 @@ const MarketChart = forwardRef<
 
                             textColor:
                                 "#9ca3af",
+
+                            panes: {
+                                separatorColor:
+                                    "rgba(156, 163, 175, 0.15)",
+
+                                separatorHoverColor:
+                                    "rgba(156, 163, 175, 0.25)",
+
+                                enableResize:
+                                    true,
+                            },
                         },
 
                         grid: {
@@ -306,8 +321,11 @@ const MarketChart = forwardRef<
                     },
                 );
 
-            chartRef.current =
-                chart;
+            chartRef.current = chart;
+
+            /*
+             * MAIN PRICE SERIES
+             */
 
             let series;
 
@@ -357,8 +375,7 @@ const MarketChart = forwardRef<
                     ),
                 );
             } else if (
-                chartType ===
-                "line"
+                chartType === "line"
             ) {
                 series =
                     chart.addSeries(
@@ -381,8 +398,7 @@ const MarketChart = forwardRef<
                     ),
                 );
             } else if (
-                chartType ===
-                "area"
+                chartType === "area"
             ) {
                 series =
                     chart.addSeries(
@@ -450,13 +466,15 @@ const MarketChart = forwardRef<
              */
 
             if (
-                indicators.sma.length >
-                0
+                indicators.sma.length > 0
             ) {
                 const smaSeries =
                     chart.addSeries(
                         LineSeries,
                         {
+                            color:
+                                "#f59e0b",
+
                             lineWidth:
                                 2,
 
@@ -486,13 +504,15 @@ const MarketChart = forwardRef<
              */
 
             if (
-                indicators.ema.length >
-                0
+                indicators.ema.length > 0
             ) {
                 const emaSeries =
                     chart.addSeries(
                         LineSeries,
                         {
+                            color:
+                                "#8b5cf6",
+
                             lineWidth:
                                 2,
 
@@ -518,17 +538,19 @@ const MarketChart = forwardRef<
             }
 
             /*
-             * Bollinger Bands
+             * BOLLINGER BANDS
              */
 
             if (
-                indicators.bollinger
-                    .length > 0
+                indicators.bollinger.length > 0
             ) {
                 const upperSeries =
                     chart.addSeries(
                         LineSeries,
                         {
+                            color:
+                                "#06b6d4",
+
                             lineWidth:
                                 1,
 
@@ -544,6 +566,9 @@ const MarketChart = forwardRef<
                     chart.addSeries(
                         LineSeries,
                         {
+                            color:
+                                "#64748b",
+
                             lineWidth:
                                 1,
 
@@ -559,6 +584,9 @@ const MarketChart = forwardRef<
                     chart.addSeries(
                         LineSeries,
                         {
+                            color:
+                                "#06b6d4",
+
                             lineWidth:
                                 1,
 
@@ -608,7 +636,7 @@ const MarketChart = forwardRef<
             }
 
             /*
-             * Current price line
+             * CURRENT PRICE LINE
              */
 
             if (
@@ -629,19 +657,22 @@ const MarketChart = forwardRef<
                             ? "#22c55e"
                             : "#ef4444",
 
-                    lineWidth: 1,
+                    lineWidth:
+                        1,
 
-                    lineStyle: 2,
+                    lineStyle:
+                        2,
 
                     axisLabelVisible:
                         true,
 
-                    title: "",
+                    title:
+                        "",
                 });
             }
 
             /*
-             * Volume histogram
+             * VOLUME
              */
 
             const volumeSeries =
@@ -668,8 +699,11 @@ const MarketChart = forwardRef<
                 .priceScale()
                 .applyOptions({
                     scaleMargins: {
-                        top: 0.75,
-                        bottom: 0,
+                        top:
+                            0.75,
+
+                        bottom:
+                            0,
                     },
                 });
 
@@ -692,7 +726,243 @@ const MarketChart = forwardRef<
             );
 
             /*
-             * Crosshair data
+             * RSI PANE
+             */
+
+            const hasRSI =
+                indicators.rsi.length > 0;
+
+            const hasMACD =
+                indicators.macd.length > 0;
+
+            let macdPaneIndex = 1;
+
+            if (hasRSI) {
+                const rsiSeries =
+                    chart.addSeries(
+                        LineSeries,
+                        {
+                            color:
+                                "#22c55e",
+
+                            lineWidth:
+                                2,
+
+                            priceLineVisible:
+                                false,
+
+                            lastValueVisible:
+                                true,
+
+                        },
+                        1,
+                    );
+
+                rsiSeries.setData(
+                    indicators.rsi.map(
+                        (point) => ({
+                            time:
+                                point.time as Time,
+
+                            value:
+                                point.value,
+                        }),
+                    ),
+                );
+
+                rsiSeries
+                    .priceScale()
+                    .applyOptions({
+                        scaleMargins: {
+                            top:
+                                0.1,
+
+                            bottom:
+                                0.1,
+                        },
+                    });
+
+                rsiSeries.createPriceLine({
+                    price:
+                        70,
+
+                    color:
+                        "#ef4444",
+
+                    lineWidth:
+                        1,
+
+                    lineStyle:
+                        2,
+
+                    axisLabelVisible:
+                        false,
+
+                    title:
+                        "70",
+                });
+
+                rsiSeries.createPriceLine({
+                    price:
+                        30,
+
+                    color:
+                        "#3b82f6",
+
+                    lineWidth:
+                        1,
+
+                    lineStyle:
+                        2,
+
+                    axisLabelVisible:
+                        false,
+
+                    title:
+                        "30",
+                });
+
+                macdPaneIndex = 2;
+
+                const rsiPane =
+                    chart.panes()[1];
+
+                rsiPane?.setHeight(
+                    120,
+                );
+            }
+
+            /*
+             * MACD PANE
+             */
+
+            if (hasMACD) {
+                const macdLineSeries =
+                    chart.addSeries(
+                        LineSeries,
+                        {
+                            color:
+                                "#3b82f6",
+
+                            lineWidth:
+                                2,
+
+                            priceLineVisible:
+                                false,
+
+                            lastValueVisible:
+                                true,
+                        },
+                        macdPaneIndex,
+                    );
+
+                macdLineSeries.setData(
+                    indicators.macd
+                        .map(
+                            (point) => ({
+                                time:
+                                    point.time as Time,
+
+                                value:
+                                    point.macd,
+                            }),
+                        ),
+                );
+
+                const signalData =
+                    indicators.macd
+                        .filter(
+                            (point) =>
+                                point.signal !==
+                                null,
+                        )
+                        .map(
+                            (point) => ({
+                                time:
+                                    point.time as Time,
+
+                                value:
+                                    point.signal!,
+                            }),
+                        );
+
+                const signalSeries =
+                    chart.addSeries(
+                        LineSeries,
+                        {
+                            color:
+                                "#f59e0b",
+
+                            lineWidth:
+                                2,
+
+                            priceLineVisible:
+                                false,
+
+                            lastValueVisible:
+                                true,
+                        },
+                        macdPaneIndex,
+                    );
+
+                signalSeries.setData(
+                    signalData,
+                );
+
+                const histogramSeries =
+                    chart.addSeries(
+                        HistogramSeries,
+                        {
+                            priceFormat: {
+                                type:
+                                    "price",
+                            },
+
+                            priceLineVisible:
+                                false,
+
+                            lastValueVisible:
+                                false,
+                        },
+                        macdPaneIndex,
+                    );
+
+                histogramSeries.setData(
+                    indicators.macd
+                        .filter(
+                            (point) =>
+                                point.histogram !==
+                                null,
+                        )
+                        .map(
+                            (point) => ({
+                                time:
+                                    point.time as Time,
+
+                                value:
+                                    point.histogram!,
+
+                                color:
+                                    point.histogram! >=
+                                    0
+                                        ? "rgba(34, 197, 94, 0.65)"
+                                        : "rgba(239, 68, 68, 0.65)",
+                            }),
+                        ),
+                );
+
+                const macdPane =
+                    chart.panes()[
+                        macdPaneIndex
+                    ];
+
+                macdPane?.setHeight(
+                    140,
+                );
+            }
+
+            /*
+             * CROSSHAIR
              */
 
             const candleMap =
@@ -721,9 +991,7 @@ const MarketChart = forwardRef<
                         typeof param.time ===
                         "number"
                             ? param.time
-                            : Number(
-                                  param.time,
-                              );
+                            : Number(param.time);
 
                     const candle =
                         candleMap.get(
@@ -755,8 +1023,7 @@ const MarketChart = forwardRef<
                             candle.close,
 
                         volume:
-                            candle.volume ??
-                            0,
+                            candle.volume ?? 0,
                     });
                 };
 
@@ -766,6 +1033,10 @@ const MarketChart = forwardRef<
 
             chart.timeScale()
                 .fitContent();
+
+            /*
+             * RESIZE
+             */
 
             const resizeObserver =
                 new ResizeObserver(
@@ -777,7 +1048,8 @@ const MarketChart = forwardRef<
                         }
 
                         chart.resize(
-                            containerRef.current
+                            containerRef
+                                .current
                                 .clientWidth,
 
                             height,
@@ -810,26 +1082,25 @@ const MarketChart = forwardRef<
             candles,
             chartType,
             height,
-            indicators,
+            indicatorConfig,
         ]);
 
         return (
             <div
                 className="relative w-full overflow-hidden rounded-xl"
                 style={{
-                    minHeight: height,
+                    minHeight:
+                        height,
                 }}
             >
                 {crosshairData && (
                     <div className="pointer-events-none absolute left-3 top-3 z-20 rounded-lg border border-slate-200 bg-white/95 px-3 py-2 text-xs shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-950/95">
-
                         <div className="mb-1 font-semibold text-slate-900 dark:text-slate-100">
                             {symbol ??
                                 "Market"}
                         </div>
 
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1 font-mono">
-
                             <span className="text-slate-500 dark:text-slate-400">
                                 O
                             </span>
@@ -887,8 +1158,10 @@ const MarketChart = forwardRef<
                                     const percentage =
                                         crosshairData.open !==
                                         0
-                                            ? (change /
-                                                  crosshairData.open) *
+                                            ? (
+                                                  change /
+                                                  crosshairData.open
+                                              ) *
                                               100
                                             : 0;
 
@@ -908,7 +1181,9 @@ const MarketChart = forwardRef<
 
                                             {change.toFixed(
                                                 2,
-                                            )}{" "}
+                                            )}
+
+                                            {" "}
 
                                             (
                                             {change >=
@@ -924,9 +1199,7 @@ const MarketChart = forwardRef<
                                     );
                                 })()}
                             </div>
-
                         </div>
-
                     </div>
                 )}
 
@@ -946,11 +1219,16 @@ const MarketChart = forwardRef<
                     </div>
                 )}
 
+                <IndicatorLegend
+                    results={indicators}
+                />
+
                 <div
                     ref={containerRef}
                     className="w-full overflow-hidden rounded-xl"
                     style={{
-                        minHeight: height,
+                        minHeight:
+                            height,
                     }}
                 />
             </div>

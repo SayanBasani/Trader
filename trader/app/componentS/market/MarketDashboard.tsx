@@ -87,6 +87,7 @@ export default function MarketDashboard() {
                     chartType={chartType}
                     interval={interval}
                     range={range}
+                    indicatorConfig={indicatorConfig}
                 />
 
             </div>

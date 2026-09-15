@@ -1,12 +1,10 @@
 import type { Candle } from "@/lib/market/types";
 
-import {
-    calculateBollingerBands,
-    calculateEMA,
-    calculateMACD,
-    calculateRSI,
-    calculateSMA,
-} from "@/lib/market/indicators";
+import { calculateBollingerBands } from "./bollinger";
+import { calculateEMA } from "./ema";
+import { calculateMACD } from "./macd";
+import { calculateRSI } from "./rsi";
+import { calculateSMA } from "./sma";
 
 import type {
     BollingerPoint,

@@ -241,9 +241,7 @@ export default function MarketOverview({
                             disabled:opacity-60
                         "
                     >
-                        {searching
-                            ? "Searching..."
-                            : "Search"}
+                        {searching ? "Searching..." : "Search"}
                     </button>
 
                 </div>
@@ -256,10 +254,10 @@ export default function MarketOverview({
 
                         {results
                             .slice(0, 8)
-                            .map((item) => (
+                            .map((item, index) => (
 
                                 <button
-                                    key={`${item.symbol}-${item.name}`}
+                                    key={`${item.symbol}-${item.name}-${index}`}
                                     type="button"
                                     onClick={() =>
                                         handleSelectStock(

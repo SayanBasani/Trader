@@ -1,18 +1,11 @@
 import { HttpClient } from "@/lib/market/client";
 import { FetchAdapter } from "@/lib/market/client/adapters";
-
 import { MARKET_ENV } from "@/lib/market/config/env";
-
 import { MarketProviderName, PROVIDER_FALLBACK_ORDER, } from "@/lib/market/config/providers";
-
 import type { MarketProvider } from "@/lib/market/interfaces/market-provider";
-
 import { FinnhubProvider, } from "@/lib/market/providers/finnhub/finnhub-provider";
-
 import { TwelveDataProvider, } from "@/lib/market/providers/twelve-data/twelve-data-provider";
-
 import { FmpProvider, } from "@/lib/market/providers/fmp";
-
 import { ProviderManager, ProviderRegistry, } from "@/lib/market/manager";
 import { UpstoxProvider, } from "@/lib/market/providers/upstox";
 import { AngelOneProvider, } from "@/lib/market/providers/angel-one/angel-one-provider";
@@ -252,9 +245,11 @@ export class ServiceContainer {
             try {
                 const provider = this.getProvider( providerName, );
                 this.providerRegistry.register( provider, );
-            } catch {
-                // Provider is not implemented
-                // or cannot currently be initialized.
+            } catch (error) {
+                console.warn(
+                    `[ServiceContainer] Failed to initialize provider "${providerName}".`,
+                    error,
+                );
             }
         }
 

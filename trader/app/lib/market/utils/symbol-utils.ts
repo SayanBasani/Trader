@@ -10,7 +10,6 @@ export interface NormalizedSymbol {
     providerSymbol: string;
 }
 
-
 export function normalizeSymbol(
     symbol: string,
 ): NormalizedSymbol {
@@ -20,104 +19,112 @@ export function normalizeSymbol(
             .trim()
             .toUpperCase();
 
-
     /*
-     * Indian NSE symbols
-     *
-     * Examples:
+     * NSE
      *
      * RELIANCE:NSE
      * RELIANCE.NS
-     *
-     * Both become:
-     *
-     * symbol:
-     * RELIANCE
-     *
-     * providerSymbol:
-     * RELIANCE:NSE
      */
 
-    if ( normalized.endsWith(":NSE") ) {
-
-        const base = normalized.slice( 0, -4, );
+    if (
+        normalized.endsWith(":NSE")
+    ) {
+        const base =
+            normalized.slice(
+                0,
+                -4,
+            );
 
         return {
             symbol: base,
-            exchange: ExchangeCode.NSE,
-            providerSymbol: base,
+            exchange:
+                ExchangeCode.NSE,
+            providerSymbol:
+                `${base}:NSE`,
         };
     }
-
 
     if (
         normalized.endsWith(".NS")
     ) {
-
-        const base = normalized.slice( 0, -3, );
+        const base =
+            normalized.slice(
+                0,
+                -3,
+            );
 
         return {
             symbol: base,
-            exchange: ExchangeCode.NSE,
-            providerSymbol: base,
+            exchange:
+                ExchangeCode.NSE,
+            providerSymbol:
+                `${base}:NSE`,
         };
     }
 
-
     /*
-     * Indian BSE symbols
-     *
-     * Examples:
+     * BSE
      *
      * RELIANCE:BSE
      * RELIANCE.BO
      */
 
-    if (  normalized.endsWith(":BSE")  ) {
-
-        const base = normalized.slice( 0, -4, );
-
-        return {
-            symbol: base,
-            exchange: ExchangeCode.BSE,
-            providerSymbol: base,
-        };
-    }
-
-
-    if ( normalized.endsWith(".BO") ) {
-
-        const base = normalized.slice( 0, -3, );
+    if (
+        normalized.endsWith(":BSE")
+    ) {
+        const base =
+            normalized.slice(
+                0,
+                -4,
+            );
 
         return {
             symbol: base,
-            exchange: ExchangeCode.BSE,
-            providerSymbol: base,
+            exchange:
+                ExchangeCode.BSE,
+            providerSymbol:
+                `${base}:BSE`,
         };
     }
 
+    if (
+        normalized.endsWith(".BO")
+    ) {
+        const base =
+            normalized.slice(
+                0,
+                -3,
+            );
+
+        return {
+            symbol: base,
+            exchange:
+                ExchangeCode.BSE,
+            providerSymbol:
+                `${base}:BSE`,
+        };
+    }
 
     /*
-     * Crypto
+     * Crypto / Forex
      *
      * BTC/USD
      * ETH/USD
-     *
-     * These are already provider-friendly
-     * for Twelve Data.
+     * EUR/USD
      */
 
-    if ( normalized.includes("/") ) {
-
+    if (
+        normalized.includes("/")
+    ) {
         return {
             symbol: normalized,
-            providerSymbol: normalized,
+            providerSymbol:
+                normalized,
         };
     }
 
-
     /*
-     * Default:
+     * US / Global default
      *
      * AAPL
      * MSFT
@@ -126,6 +133,7 @@ export function normalizeSymbol(
 
     return {
         symbol: normalized,
-        providerSymbol: normalized,
+        providerSymbol:
+            normalized,
     };
 }

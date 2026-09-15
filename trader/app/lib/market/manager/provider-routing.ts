@@ -11,6 +11,7 @@ import {
     ExchangeCode,
 } from "@/lib/market/models/exchange";
 
+
 export interface ProviderRoutingContext {
     assetType?: AssetType;
     region?: MarketRegion;
@@ -18,8 +19,12 @@ export interface ProviderRoutingContext {
     preferredProviders?: readonly MarketProviderName[];
 }
 
+
 const REGION_PREFERENCES:
-    Record<MarketRegion, readonly MarketProviderName[]> = {
+    Record<
+        MarketRegion,
+        readonly MarketProviderName[]
+    > = {
 
     [MarketRegion.INDIA]: [
         MarketProviderName.UPSTOX,
@@ -45,6 +50,7 @@ const REGION_PREFERENCES:
         MarketProviderName.ALPHA_VANTAGE,
     ],
 };
+
 
 const EXCHANGE_PREFERENCES:
     Partial<
@@ -82,6 +88,7 @@ const EXCHANGE_PREFERENCES:
         MarketProviderName.ALPHA_VANTAGE,
     ],
 };
+
 
 const ASSET_PREFERENCES:
     Partial<
@@ -132,46 +139,90 @@ const ASSET_PREFERENCES:
     ],
 };
 
+
 export function getPreferredProviders(
     context: ProviderRoutingContext = {},
 ): readonly MarketProviderName[] {
 
     if (context.preferredProviders?.length) {
-        return context.preferredProviders;
+        return [
+            ...new Set(
+                context.preferredProviders,
+            ),
+        ];
     }
 
+
+    const providers: MarketProviderName[] = [];
+
+
+    /*
+     * Priority 1:
+     * Exchange-specific providers.
+     */
     if (context.exchange) {
+
         const exchangeProviders =
             EXCHANGE_PREFERENCES[
                 context.exchange
             ];
 
         if (exchangeProviders?.length) {
-            return exchangeProviders;
+            providers.push(
+                ...exchangeProviders,
+            );
         }
     }
 
+
+    /*
+     * Priority 2:
+     * Region-specific providers.
+     *
+     * Only add providers that were not already
+     * added by the exchange preference.
+     */
     if (context.region) {
+
         const regionProviders =
             REGION_PREFERENCES[
                 context.region
             ];
 
         if (regionProviders?.length) {
-            return regionProviders;
+            providers.push(
+                ...regionProviders,
+            );
         }
     }
 
+
+    /*
+     * Priority 3:
+     * Asset-specific providers.
+     */
     if (context.assetType) {
+
         const assetProviders =
             ASSET_PREFERENCES[
                 context.assetType
             ];
 
         if (assetProviders?.length) {
-            return assetProviders;
+            providers.push(
+                ...assetProviders,
+            );
         }
     }
 
-    return [];
+
+    /*
+     * Remove duplicates while preserving
+     * the priority order.
+     */
+    return [
+        ...new Set(
+            providers,
+        ),
+    ];
 }

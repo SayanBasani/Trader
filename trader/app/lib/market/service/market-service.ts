@@ -1,29 +1,46 @@
-import type { Candles, Company, MarketStatus, NewsList, Quote, SearchResults, } from "@/lib/market/types";
-import { MARKET_ENV, } from "@/lib/market/config/env";
-import { MarketProviderName, } from "@/lib/market/config/providers";
-import { MarketOperation, ProviderManager, } from "@/lib/market/manager";
-import { ServiceContainer, } from "@/lib/market/container/service-container";
-import { getUsMarketStatus,} from "@/lib/market/utils/us-market-status";
-import { normalizeSymbol, } from "@/lib/market/utils/symbol-utils";
-import { AssetType, MarketRegion, } from "@/lib/market/models/asset";
-import { ExchangeCode, } from "@/lib/market/models/exchange";
-import { aggregateCandles, resolveMarketInterval, } from "@/lib/market/utils/interval-utils";
+import type {
+    Candles,
+    Company,
+    MarketStatus,
+    NewsList,
+    Quote,
+    SearchResults,
+} from "@/lib/market/types";
+import { MARKET_ENV } from "@/lib/market/config/env";
+import { MarketProviderName } from "@/lib/market/config/providers";
+import {
+    MarketOperation,
+    ProviderManager,
+} from "@/lib/market/manager";
+import { ServiceContainer } from "@/lib/market/container/service-container";
+import { getUsMarketStatus } from "@/lib/market/utils/us-market-status";
+import { resolveInstrument } from "@/lib/market/services/instrument-resolver";
+import {
+    aggregateCandles,
+    resolveMarketInterval,
+} from "@/lib/market/utils/interval-utils";
 
 export class MarketService {
 
-    private readonly providerManager:
-        ProviderManager;
+    private readonly providerManager: ProviderManager;
 
-
-    constructor( providerName: MarketProviderName = MARKET_ENV.provider, ) {
-        this.providerManager = ServiceContainer.getProviderManager( providerName, );
+    constructor(
+        providerName: MarketProviderName = MARKET_ENV.provider,
+    ) {
+        this.providerManager =
+            ServiceContainer.getProviderManager(
+                providerName,
+            );
     }
 
 
-    async searchStocks( query: string, ): Promise<SearchResults> {
+    async searchStocks(
+        query: string,
+    ): Promise<SearchResults> {
 
         return this.providerManager.executeWithFallback(
             MarketOperation.SEARCH,
+
             (provider) =>
                 provider.searchStocks(
                     query,
@@ -32,10 +49,12 @@ export class MarketService {
     }
 
 
-    async getQuote( symbol: string, ): Promise<Quote> {
+    async getQuote(
+        symbol: string,
+    ): Promise<Quote> {
 
-        const normalized =
-            normalizeSymbol(
+        const instrument =
+            resolveInstrument(
                 symbol,
             );
 
@@ -44,41 +63,51 @@ export class MarketService {
 
             (provider) =>
                 provider.getQuote(
-                    normalized.providerSymbol,
+                    instrument.providerSymbol ??
+                    instrument.symbol,
                 ),
 
             {
-                assetType: AssetType.STOCK,
+                assetType:
+                    instrument.assetType,
+
                 region:
-                    normalized.exchange === ExchangeCode.NSE ||
-                    normalized.exchange === ExchangeCode.BSE
-                        ? MarketRegion.INDIA
-                        : MarketRegion.US,
-                exchange: normalized.exchange,
+                    instrument.region,
+
+                exchange:
+                    instrument.exchange,
             },
         );
     }
 
-    async getCompany( symbol: string, ): Promise<Company> {
 
-        const normalized = normalizeSymbol( symbol, );
+    async getCompany(
+        symbol: string,
+    ): Promise<Company> {
+
+        const instrument =
+            resolveInstrument(
+                symbol,
+            );
 
         return this.providerManager.executeWithFallback(
             MarketOperation.COMPANY,
 
             (provider) =>
                 provider.getCompany(
-                    normalized.providerSymbol,
+                    instrument.providerSymbol ??
+                    instrument.symbol,
                 ),
 
             {
-                assetType: AssetType.STOCK,
+                assetType:
+                    instrument.assetType,
+
                 region:
-                    normalized.exchange === ExchangeCode.NSE ||
-                    normalized.exchange === ExchangeCode.BSE
-                        ? MarketRegion.INDIA
-                        : MarketRegion.US,
-                exchange: normalized.exchange,
+                    instrument.region,
+
+                exchange:
+                    instrument.exchange,
             },
         );
     }
@@ -91,8 +120,8 @@ export class MarketService {
         to: number,
     ): Promise<Candles> {
 
-        const normalized =
-            normalizeSymbol(
+        const instrument =
+            resolveInstrument(
                 symbol,
             );
 
@@ -107,21 +136,24 @@ export class MarketService {
 
                 (provider) =>
                     provider.getHistoricalCandles(
-                        normalized.providerSymbol,
+                        instrument.providerSymbol ??
+                        instrument.symbol,
+
                         interval.resolution,
+
                         from,
                         to,
                     ),
 
                 {
-                    assetType: AssetType.STOCK,
+                    assetType:
+                        instrument.assetType,
+
                     region:
-                        normalized.exchange === ExchangeCode.NSE ||
-                        normalized.exchange === ExchangeCode.BSE
-                            ? MarketRegion.INDIA
-                            : MarketRegion.US,
+                        instrument.region,
+
                     exchange:
-                        normalized.exchange,
+                        instrument.exchange,
                 },
             );
 
@@ -139,10 +171,13 @@ export class MarketService {
     }
 
 
-    async getMarketNews( category?: string, ): Promise<NewsList> {
+    async getMarketNews(
+        category?: string,
+    ): Promise<NewsList> {
 
         return this.providerManager.executeWithFallback(
             MarketOperation.NEWS,
+
             (provider) =>
                 provider.getMarketNews(
                     category,
@@ -151,16 +186,23 @@ export class MarketService {
     }
 
 
-    async getMarketStatus( exchange = "NASDAQ", ): Promise<MarketStatus> {
-        
+    async getMarketStatus(
+        exchange = "NASDAQ",
+    ): Promise<MarketStatus> {
+
         return getUsMarketStatus(
             exchange,
         );
     }
-    
-    async getMarketStatus_old( exchange?: string, ): Promise<MarketStatus> {
+
+
+    async getMarketStatus_old(
+        exchange?: string,
+    ): Promise<MarketStatus> {
+
         return this.providerManager.executeWithFallback(
             MarketOperation.STATUS,
+
             (provider) =>
                 provider.getMarketStatus(
                     exchange,
