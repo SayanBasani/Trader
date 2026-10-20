@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Demo</title>
+
+    <style>
+        body{
+            font-family:Arial,sans-serif;
+            max-width:800px;
+            margin:40px auto;
+            padding:20px;
+        }
+
+        button{
+            padding:10px 20px;
+            margin:10px;
+            cursor:pointer;
+        }
+
+        pre{
+            background:#f4f4f4;
+            padding:15px;
+            border-radius:8px;
+            white-space:pre-wrap;
+            word-break:break-word;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Location Demo</h2>
+
+<button id="roughBtn">
+    Get Rough Location (IP)
+</button>
+
+<button id="exactBtn">
+    Get Exact Location
+</button>
+
+<pre id="result">
+Click a button...
+</pre>
+
+<script>
+
+const result = document.getElementById("result");
+
+document.getElementById("roughBtn").addEventListener("click", async () => {
+
+    try{
+
+        result.textContent = "Loading...";
+
+        const res = await fetch("https://ipwho.is/");
+
+        const data = await res.json();
+        console.log(data);
+        
+        result.textContent = JSON.stringify({
+            ip: data.ip,
+            city: data.city,
+            region: data.region,
+            country: data.country,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            timezone: data.timezone.id,
+            isp: data.connection.isp
+        }, null, 4);
+
+    }catch(err){
+
+        result.textContent = err;
+
+    }
+
+});
+
+// document.getElementById("exactBtn").addEventListener("click", () => {
+
+//     if(!navigator.geolocation){
+
+//         result.textContent = "Geolocation is not supported.";
+
+//         return;
+
+//     }
+
+//     navigator.geolocation.getCurrentPosition(
+
+//         (position)=>{
+
+//             result.textContent = JSON.stringify({
+
+//                 latitude: position.coords.latitude,
+
+//                 longitude: position.coords.longitude,
+
+//                 accuracy: position.coords.accuracy + " meters",
+
+//                 altitude: position.coords.altitude,
+
+//                 speed: position.coords.speed,
+
+//                 heading: position.coords.heading,
+
+//                 timestamp: new Date(position.timestamp)
+
+//             },null,4);
+
+//         },
+
+//         (err)=>{
+
+//             result.textContent = err.message;
+
+//         },
+
+//         {
+
+//             enableHighAccuracy:true,
+
+//             timeout:10000,
+
+//             maximumAge:0
+
+//         }
+
+//     );
+
+// });
+
+</script>
+
+</body>
+</html>

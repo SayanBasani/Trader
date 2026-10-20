@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Location</title>
+</head>
+<body>
+
+    <h2>Get My Location</h2>
+
+    <button onclick="getLocation()">Get Location</button>
+
+    <pre id="result">Click the button...</pre>
+
+    <script>
+        function getLocation() {
+            if (!navigator.geolocation) {
+                document.getElementById("result").textContent =
+                    "Geolocation is not supported by this browser.";
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const data = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        accuracy: position.coords.accuracy + " meters",
+                        altitude: position.coords.altitude,
+                        speed: position.coords.speed,
+                        heading: position.coords.heading,
+                        timestamp: new Date(position.timestamp).toLocaleString()
+                    };
+
+                    document.getElementById("result").textContent =
+                        JSON.stringify(data, null, 4);
+
+                    // Example: Send to your backend
+                    /*
+                    fetch("/api/location", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    */
+                },
+                function(error) {
+                    document.getElementById("result").textContent =
+                        "Error: " + error.message;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+    </script>
+
+</body>
+</html>

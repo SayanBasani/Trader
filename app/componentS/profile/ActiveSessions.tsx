@@ -5,30 +5,23 @@ import { useEffect, useState } from "react";
 import SessionCard from "./SessionCard";
 
 interface Session {
-
     id: string;
-
     browser: string;
-
     os: string;
-
     device: string;
-
     deviceName: string;
-
     ipAddress: string;
-
     createdAt: string;
-
     lastUsedAt: string;
-
     expiresAt: string;
-
     isCurrent: boolean;
-
 }
 
-export default function ActiveSessions() {
+interface ActiveSessionsProps {
+    refreshKey?: number;
+}
+
+export default function ActiveSessions({ refreshKey = 0 }: ActiveSessionsProps) {
 
     const [sessions, setSessions] = useState<Session[]>([]);
 
@@ -61,62 +54,40 @@ export default function ActiveSessions() {
 
         loadSessions();
 
-    }, []);
+    }, [refreshKey]);
 
     function removeSession(id: string) {
-
-        setSessions(
-
-            (previous) =>
-
-                previous.filter(
-
-                    (session) => session.id !== id
-
-                )
-
+        setSessions( (previous) => 
+            previous.filter( (session) => session.id !== id ) 
         );
-
     }
 
     if (loading) {
-
         return (
-
             <div className="rounded-2xl border border-gray-200 p-5 dark:border-slate-700">
-
                 Loading sessions...
-
             </div>
-
         );
-
+    }
+    if (sessions.length === 0) {
+        return (
+            <div className="rounded-2xl border border-gray-200 p-5 text-sm text-gray-500 dark:border-slate-700">
+                No active sessions found.
+            </div>
+        );
     }
 
     return (
-
         <div className="space-y-5">
-
             {
-
                 sessions.map((session) => (
-
                     <SessionCard
-
                         key={session.id}
-
                         session={session}
-
                         onDeleted={removeSession}
-
                     />
-
                 ))
-
             }
-
         </div>
-
     );
-
 }

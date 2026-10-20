@@ -25,6 +25,7 @@ export default function SecurityCard({
     const [showPasswordForm, setShowPasswordForm] = useState(false);
     const router = useRouter();
     const [loggingOut, setLoggingOut] = useState(false);
+    const [sessionsRefreshKey, setSessionsRefreshKey] = useState(0);
 
     async function logoutOtherDevices() {
         try {
@@ -39,6 +40,7 @@ export default function SecurityCard({
             if (!response.ok) {
                 throw new Error(data.message);
             }
+            setSessionsRefreshKey((prev) => prev + 1);
 
             router.refresh();
         }
@@ -144,7 +146,7 @@ export default function SecurityCard({
 
                 </SecurityItem>
                 
-                <ActiveSessions />
+                <ActiveSessions refreshKey={sessionsRefreshKey} />
 
                 <SecurityItem
                     icon={<KeyRound size={22} />}
